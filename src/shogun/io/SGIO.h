@@ -23,6 +23,9 @@
 
 #ifndef _WIN32
 #include <unistd.h>
+#include <sys/ioctl.h>
+#else
+#include <windows.h>
 #endif
 
 namespace shogun
@@ -313,18 +316,19 @@ class SGIO
 
 		/** print progress bar
 		 *
-		 * @param current_val current value
+		 * @param current_val current value (from min_val to max_val-1)
 		 * @param min_val minimum value
 		 * @param max_val maximum value
 		 * @param decimals decimals
 		 * @param prefix message prefix
+		 * @param bar_symbol symbol used to display the progress bar
 		 */
 		void progress(
 			float64_t current_val,
 			float64_t min_val=0.0, float64_t max_val=1.0, int32_t decimals=1,
-			const char* prefix="PROGRESS:\t");
+			const char* prefix="PROGRESS:", const char* bar_symbol="\u2588");
 
-		/** print absolute progress bar
+		/** print absolute progress
 		 *
 		 * @param current_val current value
 		 * @param val value
@@ -386,6 +390,9 @@ class SGIO
 		{
 			return target;
 		}
+
+		/** Set screen rows and column */
+		void set_screen_size();
 
 		/** set target
 		 *
@@ -574,6 +581,10 @@ class SGIO
 		EMessageLocation location_info;
 		/** whether syntax highlighting is enabled */
 		bool syntax_highlight;
+		/** Column number */
+		int32_t COL_NUM;
+		/** Rows number */
+		int32_t ROWS_NUM;
 
 		/** log level */
 		EMessageType loglevel;

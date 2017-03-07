@@ -154,23 +154,37 @@ void SGIO::buffered_message(EMessageType prio, const char *fmt, ... ) const
 
 void SGIO::progress(
 	float64_t current_val, float64_t min_val, float64_t max_val,
-	int32_t decimals, const char* prefix)
+	int32_t decimals, const char* prefix, const char* bar_symbol)
 {
 	if (!show_progress)
 		return;
 
+	// Check for terminal dimension. This is for provide
+	// a minimal resize functionality.
+	set_screen_size();
+
 	float64_t runtime = CTime::get_curtime();
 
 	char str[1000];
-	float64_t v=-1, estimate=0, total_estimate=0 ;
+	float64_t v=-1, estimate=0, total_estimate=0, real_space_occ=0;
+	float64_t difference = max_val-min_val-1;
+	float64_t size_chunk = -1;
 
-	if (max_val-min_val>0.0)
-		v=100*(current_val-min_val+1)/(max_val-min_val+1);
+	// Check if we have enough space to show the progress bar.
+	// Calculate the space occupied by the progress bar.
+	int32_t progress_bar_space = (COL_NUM-60-strlen(prefix))*0.9;
+	REQUIRE(progress_bar_space>0, "Not enough screen space to show the progress bar!\n")
+
+	if (difference>0.0)
+		v=100*(current_val-min_val+1)/(difference+1);
+
+	// Set up progress bar's chunk size.
+	size_chunk = (difference)/(float64_t)progress_bar_space;
 
 	if (decimals < 1)
 		decimals = 1;
 
-	if (last_progress>v)
+	if (last_progress == 1)
 	{
 		last_progress_time = runtime;
 		progress_start_time = runtime;
@@ -189,18 +203,41 @@ void SGIO::progress(
 		total_estimate = (last_progress_time-progress_start_time)/(v/100);
 	}
 
+	// Print the progress bar
+	message(MSG_MESSAGEONLY, "", "", -1, "%s |", prefix);
+	for (index_t i=1; i<progress_bar_space; i++) {
+		if (current_val > i*size_chunk) {
+			message(MSG_MESSAGEONLY, "", "", -1, bar_symbol);
+		} else {
+			message(MSG_MESSAGEONLY, "", "", -1, " ");
+		}
+	}
+
 	if (estimate>120)
 	{
-		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate/60, total_estimate/60);
+		snprintf(str, sizeof(str), "| %%%d.%df%%%% %%1.1f minutes remaining %%1.1f minutes total",decimals+3, decimals);
+		message(MSG_MESSAGEONLY, "", "", -1, str, v, estimate/60, total_estimate/60);
 	}
 	else
 	{
-		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
+		snprintf(str, sizeof(str), "| %%%d.%df%%%%  %%1.1f seconds remaining %%1.1f seconds total",decimals+3, decimals);
+		message(MSG_MESSAGEONLY, "", "", -1, str, v, estimate, total_estimate);
 	}
 
-    fflush(target);
+	// FIXME
+	// Print other spaces to clear the line
+	// Need to find a better method to do it
+	//real_space_occ = COL_NUM - strlen(str)-progress_bar_space-strlen(prefix)-2;
+	//if (real_space_occ > 0)
+	//    for (index_t i=0; i<real_space_occ; i++) message(MSG_MESSAGEONLY, "", "", -1, " ");
+
+	message(MSG_MESSAGEONLY, "", "", -1, "\r");
+
+	// If we arrive to the end, we print a new line.
+	if (current_val >= max_val-1.0)
+		message(MSG_MESSAGEONLY, "", "", -1, "\n");
+
+	fflush(target);
 }
 
 void SGIO::absolute_progress(
@@ -303,6 +340,20 @@ void SGIO::set_loglevel(EMessageType level)
 void SGIO::set_target(FILE* t)
 {
 	target=t;
+}
+
+void SGIO::set_screen_size() {
+#if WIN32
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+	COL_NUM = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+	ROWS_NUM = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+#else
+	struct winsize wind;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &wind);
+	COL_NUM = wind.ws_col;
+	ROWS_NUM = wind.ws_row;
+#endif
 }
 
 const char* SGIO::get_msg_intro(EMessageType prio) const
