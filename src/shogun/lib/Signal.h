@@ -16,6 +16,15 @@
 
 namespace shogun
 {
+	/**
+	 * Possible Shogun signal types.
+	 */
+	enum sg_signals_types
+	{
+		SG_BLOCK_COMP,
+		SG_PAUSE_COMP
+	};
+
 	/** @brief Class Signal implements signal handling to e.g. allow CTRL+C to
 	 * cancel a long running process.
 	 *
@@ -38,16 +47,22 @@ namespace shogun
 		static void handler(int signal);
 
 		/**
-		 * Get SIGINT observable
-		 * @return observable
-		 */
-		rxcpp::connectable_observable<int> get_SIGINT_observable();
+		* Get observable
+		* @return RxCpp observable
+		*/
+		rxcpp::observable<int> get_observable()
+		{
+			return m_observable;
+		};
 
 		/**
-		* Get SIGURG observable
-		* @ return observable
+		* Get subscriber
+		* @return RxCpp subscriber
 		*/
-		rxcpp::connectable_observable<int> get_SIGURG_observable();
+		rxcpp::subscriber<int> get_subscriber()
+		{
+			return m_subscriber;
+		};
 
 		/** Cancel computations
 		 *
@@ -64,6 +79,15 @@ namespace shogun
 		{
 			m_active = true;
 		}
+		/**
+		 * Reset handler in case of multiple instantiation
+		 */
+		static void reset_handler()
+		{
+			m_subject = rxcpp::subjects::subject<int>();
+			m_observable = m_subject.get_observable();
+			m_subscriber = m_subject.get_subscriber();
+		}
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Signal"; }
@@ -72,11 +96,10 @@ namespace shogun
 		/** Active signal */
 		static bool m_active;
 
-		/** SIGINT Observable */
-		static rxcpp::connectable_observable<int> m_sigint_observable;
-
-		/** SIGURG Observable */
-		static rxcpp::connectable_observable<int> m_sigurg_observable;
+		/** Observable */
+		static rxcpp::subjects::subject<int> m_subject;
+		static rxcpp::observable<int> m_observable;
+		static rxcpp::subscriber<int> m_subscriber;
 };
 }
 #endif // __SIGNAL__H_
