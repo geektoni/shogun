@@ -150,7 +150,10 @@ namespace shogun
 
 using namespace shogun;
 
-CSGObject::CSGObject() : self()
+CSGObject::CSGObject()
+    : self(), m_subject_params(),
+      m_observable_params(m_subject_params.get_observable()),
+      m_subscriber_params(m_subject_params.get_subscriber())
 {
 	init();
 	set_global_objects();
@@ -160,7 +163,10 @@ CSGObject::CSGObject() : self()
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-: self(), io(orig.io), parallel(orig.parallel), version(orig.version)
+    : self(), io(orig.io), parallel(orig.parallel), version(orig.version),
+      m_subject_params(orig.m_subject_params),
+      m_observable_params(orig.m_observable_params),
+      m_subscriber_params(orig.m_subscriber_params)
 {
 	init();
 	set_global_objects();
@@ -753,7 +759,7 @@ bool CSGObject::clone_parameters(CSGObject* other)
 {
 	REQUIRE(other, "Provided instance must be non-empty.\n");
 	index_t num_parameters = m_parameters->get_num_parameters();
-	
+
 	REQUIRE(other->m_parameters->get_num_parameters() == num_parameters,
 		"Number of parameters of provided instance (%d) must match this instance (%d).\n",
 		other->m_parameters->get_num_parameters(), num_parameters);
@@ -800,3 +806,105 @@ bool CSGObject::type_erased_has(const BaseTag& _tag) const
 {
 	return self->has(_tag);
 }
+
+template<>
+void CSGObject::observe_scalar<char>(const std::string& name, const char& value)
+{
+	/* Emit the parameter value to all the observer */
+	m_subscriber_params.on_next(std::make_pair(name, value));
+}
+
+template<>
+void CSGObject::observe_scalar<int8_t>(
+    const std::string& name, const int8_t& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<uint8_t>(
+    const std::string& name, const uint8_t& value)
+{
+	/* Emit the parameter value to all the observer */
+	m_subscriber_params.on_next(std::make_pair(name, value));
+}
+
+template<>
+void CSGObject::observe_scalar<int16_t>(
+    const std::string& name, const int16_t& value){
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<uint16_t>(
+    const std::string& name, const uint16_t& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<int32_t>(
+    const std::string& name, const char& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<uint32_t>(
+    const std::string& name, const char& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<int64_t>(
+    const std::string& name, const char& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<uint64_t>(
+    const std::string& name, const char& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<float32_t>(
+    const std::string& name, const char& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<float64_t>(
+    const std::string& name, const char& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<floatmax_t>(
+    const std::string& name, const char& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
+
+template<>
+void CSGObject::observe_scalar<complex128_t>(
+    const std::string& name, const char& value)
+	{
+		/* Emit the parameter value to all the observer */
+		m_subscriber_params.on_next(std::make_pair(name, value));
+	}
