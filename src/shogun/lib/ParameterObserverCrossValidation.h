@@ -40,7 +40,7 @@
 
 namespace shogun
 {
-	class CCrossValidationOutput;
+	class CCrossValidationStorage;
 
 	class ParameterObserverCrossValidation : public ParameterObserverInterface
 	{
@@ -52,10 +52,10 @@ namespace shogun
 		virtual void on_error(std::exception_ptr){};
 		virtual void on_complete(){};
 
-		virtual std::vector<CCrossValidationOutput*> get_observations();
+		virtual std::vector<CrossValidationStorage*> get_observations();
 
 	private:
-		std::vector<CCrossValidationOutput*> m_fold_observations;
+		std::vector<CrossValidationStorage*> m_fold_observations;
 	};
 }
 

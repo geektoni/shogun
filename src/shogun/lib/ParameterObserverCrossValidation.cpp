@@ -33,7 +33,7 @@
 *
 */
 
-#include <shogun/evaluation/CrossValidationOutput.h>
+#include <shogun/evaluation/CrossValidationStorage.h>
 #include <shogun/lib/ParameterObserverCrossValidation.h>
 
 using namespace shogun;
@@ -54,8 +54,8 @@ void ParameterObserverCrossValidation::on_next(const ObservedValue& value)
 	if (value.second.second.type_info().hash_code() ==
 	    typeid(CCrossValidationOutput).hash_code())
 	{
-		auto v = recall_type<CCrossValidationOutput>(value.second.second);
-		m_fold_observations.push_back((CCrossValidationOutput*)v.clone());
+		auto v = recall_type<CrossValidationStorage>(value.second.second);
+		m_fold_observations.push_back((CrossValidationStorage*)v.clone());
 	}
 	else
 	{
@@ -63,7 +63,7 @@ void ParameterObserverCrossValidation::on_next(const ObservedValue& value)
 	}
 }
 
-std::vector<CCrossValidationOutput*>
+std::vector<CrossValidationStorage*>
 ParameterObserverCrossValidation::get_observations()
 {
 	return m_fold_observations;
