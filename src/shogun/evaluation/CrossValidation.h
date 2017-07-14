@@ -21,6 +21,7 @@ namespace shogun
 
 class CMachineEvaluation;
 class CCrossValidationOutput;
+class CrossValidationStorage;
 class CList;
 
 /** @brief type to encapsulate the results of an evaluation run.
@@ -178,13 +179,15 @@ protected:
 	 *
 	 * @return evaluation result of one cross-validation run
 	 */
-	virtual float64_t evaluate_one_run();
+	virtual float64_t evaluate_one_run(int step = 0);
 
 	/** number of evaluation runs for one fold */
 	int32_t m_num_runs;
 
 	/** xval output listeners */
 	CList* m_xval_outputs;
+
+	CrossValidationStorage* m_storage;
 };
 
 }
