@@ -40,7 +40,7 @@ class CEvaluation;
  * stuff. These number of runs/folds and their current indices are stored since
  * these might be used from many subclasses.
  */
-class CCrossValidationOutput: public CSGObject
+class CCrossValidationOutput: public CSGObject, public ObservedValue
 {
 public:
 

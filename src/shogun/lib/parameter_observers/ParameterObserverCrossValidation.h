@@ -40,7 +40,7 @@
 
 namespace shogun
 {
-	class CCrossValidationStorage;
+	class CrossValidationStorage;
 
 	class ParameterObserverCrossValidation : public ParameterObserverInterface
 	{

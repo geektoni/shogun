@@ -80,6 +80,10 @@ namespace shogun
 
 		float64_t get_evaluation_result() const;
 
+		bool operator==(const CrossValidationStorage &rhs) const {
+			return true;
+		}
+
 		virtual const char* get_name() const
 		{
 			return "CrossValidationStorage";

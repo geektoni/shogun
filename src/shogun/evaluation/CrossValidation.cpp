@@ -155,7 +155,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 		SG_DEBUG("entering cross-validation run %d \n", i)
 		results[i] = evaluate_one_run(i);
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
-		observe(<#initializer#>);
+		observe(*m_storage);
 	}
 
 	/* construct evaluation result */
@@ -254,7 +254,7 @@ float64_t CCrossValidation::evaluate_one_run(int step)
 			/* evaluate against own labels */
 			m_evaluation_criterion->set_indices(subset_indices);
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
-			observe(<#initializer#>);
+			observe(*m_storage);
 
 			/* evtl. update xvalidation output class */
 			/*current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
@@ -401,7 +401,7 @@ float64_t CCrossValidation::evaluate_one_run(int step)
 
 			/* evaluate */
 			results[i]=evaluation_criterion->evaluate(result_labels, labels);
-			observe(<#initializer#>);
+			observe(*m_storage);
 			SG_DEBUG("result on fold %d is %f\n", i, results[i])
 
 			/* evtl. update xvalidation output class */

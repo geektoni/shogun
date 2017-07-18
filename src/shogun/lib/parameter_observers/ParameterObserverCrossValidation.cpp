@@ -52,7 +52,7 @@ void ParameterObserverCrossValidation::on_next(const TimedObservedValue& value)
 {
 	// Simply store the result into the vector
 	if (value.first.get_value().type_info().hash_code() ==
-	    typeid(CCrossValidationStorage).hash_code())
+	    typeid(CrossValidationStorage).hash_code())
 	{
 		auto v = recall_type<CrossValidationStorage>(value.first.get_value());
 		m_fold_observations.push_back((CrossValidationStorage*)v.clone());
