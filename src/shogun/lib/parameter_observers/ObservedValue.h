@@ -37,6 +37,7 @@
 #define SHOGUN_OBSERVEDVALUE_H
 
 #include <chrono>
+#include <shogun/lib/common.h>
 #include <shogun/lib/any.h>
 #include <utility>
 
@@ -49,17 +50,84 @@ namespace shogun
 	/* Timepoint */
 	typedef std::chrono::steady_clock::time_point time_point;
 
-	/* One observed value, composed of:
-	 *  - step (for the graph x axis);
-	 *  - parameter's name;
-	 *  - parameter's value (Any wrapped);
-	 */
-	struct ObservedValue
+	/* Type of the observed value */
+	enum SG_OBS_VALUE_TYPE
 	{
-		int64_t step;
-		std::string name;
-		Any value;
+		TENSORBOARD
 	};
+
+	/**
+	 * Observed value which are emitted by algorithm.
+	 *
+	 * This class can be used to implement custom observed values.
+	 * For instance, one can code an observed value which can be
+	 * used to retrieve data from CrossValidation
+	 */
+	class ObservedValue
+	{
+	public:
+		ObservedValue(){};
+		ObservedValue(int64_t step, std::string& name, Any value)
+		    : m_step(step), m_name(name), m_value(value)
+		{
+			m_type = TENSORBOARD;
+		}
+		~ObservedValue(){};
+
+		int64_t get_step() const
+		{
+			return m_step;
+		}
+
+		void set_step(int64_t step)
+		{
+			m_step = step;
+		}
+
+		const std::string& get_name() const
+		{
+			return m_name;
+		}
+
+		void set_name(const std::string& name)
+		{
+			m_name = name;
+		}
+
+		const Any& get_value() const
+		{
+			return m_value;
+		}
+
+		void set_value(const Any& value)
+		{
+			m_value = value;
+		}
+
+		SG_OBS_VALUE_TYPE get_type() const
+		{
+			return m_type;
+		}
+
+	protected:
+		int64_t m_step;
+		std::string m_name;
+		Any m_value;
+		SG_OBS_VALUE_TYPE m_type;
+	};
+
+
+	/**
+	 * Helper method to generate an ObservedValue (TensorBoard oriented)
+	 * @param step the step
+	 * @param name the param's name we are observing
+	 * @param value the param's value
+	 * @return an ObservedValue object initialized
+	 */
+	SG_FORCED_INLINE ObservedValue make_observation(int64_t step, std::string& name, Any value)
+	{
+		return ObservedValue(step, name, value);
+	}
 
 	/**
 	 * Observed value with a timestamp

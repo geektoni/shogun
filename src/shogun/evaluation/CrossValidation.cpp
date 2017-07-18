@@ -369,7 +369,6 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* evaluate */
 			results[i]=evaluation_criterion->evaluate(result_labels, labels);
-			SG_DEBUG("result on fold %d is %f\n", i, results[i])
 
 			/* evtl. update xvalidation output class */
 			#pragma omp critical
