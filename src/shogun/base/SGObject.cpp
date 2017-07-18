@@ -21,6 +21,7 @@
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGStringList.h>
+#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 #include <shogun/io/SerializableFile.h>
 
 #include <shogun/base/class_list.h>
@@ -837,19 +838,14 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 	// parameters selected by the observable.
 	auto subscription =
 	    m_observable_params
-	        ->filter([obs](ObservedValue v) { return obs->filter(v.name); })
+	        ->filter([obs](ObservedValue v) { return obs->filter(v.get_name()); })
 	        .timestamp()
 	        .subscribe(sub);
 }
 
-void CSGObject::observe_scalar(
-    const int64_t step, const std::string& name, const Any& value)
+void CSGObject::observe(const ObservedValue &value)
 {
-	ObservedValue tmp;
-	tmp.step = step;
-	tmp.name = name;
-	tmp.value = value;
-	m_subscriber_params->on_next(tmp);
+	m_subscriber_params->on_next(value);
 }
 
 void CSGObject::register_observable_param(

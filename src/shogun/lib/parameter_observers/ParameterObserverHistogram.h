@@ -32,39 +32,35 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
-#include <shogun/evaluation/CrossValidationStorage.h>
-#include <shogun/lib/ParameterObserverCrossValidation.h>
+#ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
 
-using namespace shogun;
+#include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
 
-ParameterObserverCrossValidation::ParameterObserverCrossValidation()
+namespace shogun
 {
-}
-
-ParameterObserverCrossValidation::~ParameterObserverCrossValidation()
-{
-	for (auto v : m_fold_observations)
-		delete v;
-}
-
-void ParameterObserverCrossValidation::on_next(const ObservedValue& value)
-{
-	// Simply store the result into the vector
-	if (value.second.second.type_info().hash_code() ==
-	    typeid(CCrossValidationOutput).hash_code())
+	/**
+	 * Implementation of a ParameterObserver which write to file
+	 * histograms, given object emitted from a parameter observable.
+	 */
+	class ParameterObserverHistogram : public ParameterObserverTensorBoard
 	{
-		auto v = recall_type<CrossValidationStorage>(value.second.second);
-		m_fold_observations.push_back((CrossValidationStorage*)v.clone());
-	}
-	else
-	{
-		SG_SERROR("Object received is not of type CCrossValidationOutput.");
-	}
+
+	public:
+		ParameterObserverHistogram();
+		ParameterObserverHistogram(std::vector<std::string>& parameters);
+		ParameterObserverHistogram(
+		    const std::string& filename, std::vector<std::string>& parameters);
+		~ParameterObserverHistogram();
+
+		virtual void on_next(const TimedObservedValue& value);
+		virtual void on_error(std::exception_ptr);
+		virtual void on_complete();
+	};
 }
 
-std::vector<CrossValidationStorage*>
-ParameterObserverCrossValidation::get_observations()
-{
-	return m_fold_observations;
-}
+#endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#endif // HAVE_TFLOGGER

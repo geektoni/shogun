@@ -49,17 +49,70 @@ namespace shogun
 	/* Timepoint */
 	typedef std::chrono::steady_clock::time_point time_point;
 
-	/* One observed value, composed of:
-	 *  - step (for the graph x axis);
-	 *  - parameter's name;
-	 *  - parameter's value (Any wrapped);
+	/**
+	 * Observed value which are emitted by algorithm.
+	 *
+	 * This class can be used to implement custom observed values.
+	 * For instance, one can code an observed value which can be
+	 * used to retrieve data from CrossValidation
 	 */
-	struct ObservedValue
+	class ObservedValue
 	{
-		int64_t step;
-		std::string name;
-		Any value;
+	public:
+		ObservedValue(){};
+		ObservedValue(int64_t step, std::string& name, Any& value)
+		    : m_step(step), m_name(name), m_value(value)
+		{
+		}
+		~ObservedValue(){};
+
+		int64_t get_step() const
+		{
+			return m_step;
+		}
+
+		void set_step(int64_t step)
+		{
+			m_step = step;
+		}
+
+		const std::string& get_name() const
+		{
+			return m_name;
+		}
+
+		void set_name(const std::string& name)
+		{
+			m_name = name;
+		}
+
+		const Any& get_value() const
+		{
+			return m_value;
+		}
+
+		void set_value(const Any& value)
+		{
+			m_value = value;
+		}
+
+	protected:
+		int64_t m_step;
+		std::string m_name;
+		Any m_value;
 	};
+
+	/**
+	 * Helper method to generate an ObservedValue (TensorBoard oriented)
+	 * @param step the step
+	 * @param name the param's name we are observing
+	 * @param value the param's value
+	 * @return an ObservedValue object initialized
+	 */
+	inline ObservedValue make_observation(int64_t step, std::string& name, Any & value)
+	{
+		return ObservedValue(step, name, value);
+	}
 
 	/**
 	 * Observed value with a timestamp

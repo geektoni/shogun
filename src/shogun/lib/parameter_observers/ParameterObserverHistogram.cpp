@@ -32,26 +32,49 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/ParameterObserverInterface.h>
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
+
+#include <shogun/io/TBOutputFormat.h>
+#include <shogun/lib/parameter_observers/ParameterObserverHistogram.h>
 
 using namespace shogun;
 
-ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
+ParameterObserverHistogram::ParameterObserverHistogram()
+    : ParameterObserverTensorBoard()
 {
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
+ParameterObserverHistogram::ParameterObserverHistogram(
     std::vector<std::string>& parameters)
-    : m_parameters(parameters)
+    : ParameterObserverTensorBoard(parameters)
 {
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
+ParameterObserverHistogram::ParameterObserverHistogram(
     const std::string& filename, std::vector<std::string>& parameters)
-    : m_parameters(parameters)
+    : ParameterObserverTensorBoard(filename, parameters)
 {
 }
 
-ParameterObserverInterface::~ParameterObserverInterface()
+ParameterObserverHistogram::~ParameterObserverHistogram()
 {
 }
+
+void ParameterObserverHistogram::on_next(const TimedObservedValue& value)
+{
+	auto node_name = std::string("node");
+	auto format = TBOutputFormat();
+	auto event_value = format.convert_vector(value, node_name);
+	m_writer.writeEvent(event_value);
+}
+
+void ParameterObserverHistogram::on_error(std::exception_ptr)
+{
+}
+
+void ParameterObserverHistogram::on_complete()
+{
+}
+
+#endif // HAVE_TFLOGGER

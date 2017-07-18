@@ -32,60 +32,31 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/config.h>
-#ifdef HAVE_TFLOGGER
 
-#include <shogun/io/TBOutputFormat.h>
-#include <shogun/lib/ParameterObserverHistogram.h>
+#ifndef SHOGUN_PARAMETEROBSERVERCROSSVALIDATION_H
+#define SHOGUN_PARAMETEROBSERVERCROSSVALIDATION_H
 
-using namespace shogun;
+#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
 
-ParameterObserverHistogram::ParameterObserverHistogram()
-    : ParameterObserverTensorBoard()
+namespace shogun
 {
+	class CCrossValidationStorage;
+
+	class ParameterObserverCrossValidation : public ParameterObserverInterface
+	{
+
+		ParameterObserverCrossValidation();
+		~ParameterObserverCrossValidation();
+
+		virtual void on_next(const TimedObservedValue& value);
+		virtual void on_error(std::exception_ptr){};
+		virtual void on_complete(){};
+
+		virtual std::vector<CrossValidationStorage*> get_observations();
+
+	private:
+		std::vector<CrossValidationStorage*> m_fold_observations;
+	};
 }
 
-ParameterObserverHistogram::ParameterObserverHistogram(
-    std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(parameters)
-{
-}
-
-ParameterObserverHistogram::ParameterObserverHistogram(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(filename, parameters)
-{
-}
-
-ParameterObserverHistogram::~ParameterObserverHistogram()
-{
-}
-
-void ParameterObserverHistogram::on_next(const TimedObservedValue& value)
-{
-	auto node_name = std::string("node");
-	auto format = TBOutputFormat();
-	auto event_value = format.convert_vector(value, node_name);
-	m_writer.writeEvent(event_value);
-}
-
-void ParameterObserverHistogram::on_error(std::exception_ptr)
-{
-}
-
-void ParameterObserverHistogram::on_complete()
-{
-}
-
-bool ParameterObserverHistogram::filter(const std::string& param)
-{
-	if (m_parameters.size() == 0)
-		return true;
-
-	for (auto v : m_parameters)
-		if (v == param)
-			return true;
-	return false;
-}
-
-#endif // HAVE_TFLOGGER
+#endif // SHOGUN_PARAMETEROBSERVERCROSSVALIDATION_H

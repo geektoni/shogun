@@ -32,52 +32,39 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/config.h>
-#ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
-#define SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
+#include <shogun/evaluation/CrossValidationStorage.h>
+#include <shogun/lib/parameter_observers/ParameterObserverCrossValidation.h>
 
-#include <shogun/lib/ParameterObserverInterface.h>
+using namespace shogun;
 
-#include <tflogger/event_logger.h>
-
-namespace shogun
+ParameterObserverCrossValidation::ParameterObserverCrossValidation()
 {
-	class ParameterObserverTensorBoard : public ParameterObserverInterface
-	{
-
-	public:
-		/**
-		* Default constructor
-		*/
-		ParameterObserverTensorBoard();
-
-		/**
-		 * Constructor
-		 * @param parameters list of parameters which we want to watch over
-		 */
-		ParameterObserverTensorBoard(std::vector<std::string>& parameters);
-
-		/**
-		 * Constructor
-		 * @param filename name of the generated output file
-		 * @param parameters list of parameters which we want to watch over
-		 */
-		ParameterObserverTensorBoard(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		/**
-		 * Virtual destructor
-		 */
-		virtual ~ParameterObserverTensorBoard();
-
-	protected:
-		/**
-		* Writer object which will be used to write tensorflow::Event files
-		*/
-		tflogger::EventLogger m_writer;
-	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERTENSORBOARD_H
-#endif // HAVE_TFLOGGER
+ParameterObserverCrossValidation::~ParameterObserverCrossValidation()
+{
+	for (auto v : m_fold_observations)
+		delete v;
+}
+
+void ParameterObserverCrossValidation::on_next(const TimedObservedValue& value)
+{
+	// Simply store the result into the vector
+	if (value.first.get_value().type_info().hash_code() ==
+	    typeid(CCrossValidationStorage).hash_code())
+	{
+		auto v = recall_type<CrossValidationStorage>(value.first.get_value());
+		m_fold_observations.push_back((CrossValidationStorage*)v.clone());
+	}
+	else
+	{
+		SG_SERROR("Object received is not of type CCrossValidationOutput.");
+	}
+}
+
+std::vector<CrossValidationStorage*>
+ParameterObserverCrossValidation::get_observations()
+{
+	return m_fold_observations;
+}
