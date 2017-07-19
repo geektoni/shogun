@@ -53,7 +53,8 @@ namespace shogun
 	/* Type of the observed value */
 	enum SG_OBS_VALUE_TYPE
 	{
-		TENSORBOARD
+		TENSORBOARD,
+		CROSSVALIDATION
 	};
 
 	/**
@@ -72,7 +73,7 @@ namespace shogun
 		{
 			m_type = TENSORBOARD;
 		}
-		~ObservedValue(){};
+		virtual ~ObservedValue(){};
 
 		int64_t get_step() const
 		{
@@ -124,7 +125,7 @@ namespace shogun
 	 * @param value the param's value
 	 * @return an ObservedValue object initialized
 	 */
-	SG_FORCED_INLINE ObservedValue make_observation(int64_t step, std::string& name, Any value)
+	SG_FORCED_INLINE ObservedValue make_observation(int64_t step, std::string name, Any value)
 	{
 		return ObservedValue(step, name, value);
 	}

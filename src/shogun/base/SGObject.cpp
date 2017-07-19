@@ -807,6 +807,26 @@ bool CSGObject::type_erased_has(const BaseTag& _tag) const
 	return self->has(_tag);
 }
 
+class CSGObject::ParameterObserverList
+{
+public:
+	void register_param(
+	    const std::string& name, const std::string& type,
+	    const std::string& description)
+	{
+		m_list_obs_params[name] = std::make_pair(type, description);
+	}
+
+	ObsParamsList get_list() const
+	{
+		return m_list_obs_params;
+	}
+
+private:
+	/** List of observable parameters (name, description) */
+	ObsParamsList m_list_obs_params;
+};
+
 void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
@@ -828,26 +848,6 @@ void CSGObject::observe(const ObservedValue &value)
 	m_subscriber_params->on_next(value);
 }
 
-class CSGObject::ParameterObserverList
-{
-public:
-	void register_param(
-	    const std::string& name, const std::string& type,
-	    const std::string& description)
-	{
-		m_list_obs_params[name] = std::make_pair(type, description);
-	}
-
-	ObsParamsList get_list() const
-	{
-		return m_list_obs_params;
-	}
-
-private:
-	/** List of observable parameters (name, description) */
-	ObsParamsList m_list_obs_params;
-};
-
 void CSGObject::register_observable_param(
     const std::string& name, const std::string& type,
     const std::string& description)
@@ -857,12 +857,11 @@ void CSGObject::register_observable_param(
 
 void CSGObject::list_observable_parameters()
 {
-	SG_INFO("List of observable parameters of object %s\n", get_name());
-	SG_PRINT("------");
+	SG_PRINT("List of %s's observable parameters\n", get_name());
 	for (auto const& x : param_obs_list->get_list())
 	{
 		SG_PRINT(
-		    "%s [%s]: %s\n", x.first.c_str(), x.second.first.c_str(),
+		    "* %s [%s]: %s\n", x.first.c_str(), x.second.first.c_str(),
 		    x.second.second.c_str());
 	}
 }
