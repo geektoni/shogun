@@ -824,9 +824,9 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 	                        .subscribe(sub);
 }
 
-void CSGObject::observe(const ObservedValue* value)
+void CSGObject::observe(const ObservedValue value)
 {
-	m_subscriber_params->on_next(*value);
+	m_subscriber_params->on_next(value);
 }
 
 class CSGObject::ParameterObserverList
@@ -846,6 +846,9 @@ public:
 		{
 		case TENSORBOARD:
 			value = std::string("Tensorboard");
+			break;
+		case CROSSVALIDATION:
+			value = std::string("CrossValidation");
 			break;
 		default:
 			value = std::string("Unknown");
