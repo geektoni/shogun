@@ -99,18 +99,17 @@ void ParameterObserverCV::clear()
 
 void ParameterObserverCV::print_observed_value(CrossValidationStorage * value) const
 {
-	//SG_SPRINT("Total number of runs: ", value->get_num_runs());
-	//SG_SPRINT("Total number of folds: ", value->get_num_folds());
 	for (auto f : value->get_folds_results())
 	{
+		SG_SPRINT("\n")
 		SG_SPRINT("Current run index: %i\n", f->get_current_run_index())
 		SG_SPRINT("Current fold index: %i\n", f->get_current_fold_index())
-		f->get_train_indices().display_vector("Train Indices: ");
-		f->get_test_indices().display_vector("Test Indices: ");
+		f->get_train_indices().display_vector("Train Indices ");
+		f->get_test_indices().display_vector("Test Indices ");
 		print_machine_information(f->get_trained_machine());
-		f->get_test_result()->get_values().display_vector("Test Labels: ");
-		f->get_test_true_result()->get_values().display_vector("Test True Labels");
-		SG_SPRINT("Evaluation result: %d\n", f->get_evaluation_result());
+		f->get_test_result()->get_values().display_vector("Test Labels ");
+		f->get_test_true_result()->get_values().display_vector("Test True Label ");
+		SG_SPRINT("Evaluation result: %f\n", f->get_evaluation_result());
 	}
 }
 
