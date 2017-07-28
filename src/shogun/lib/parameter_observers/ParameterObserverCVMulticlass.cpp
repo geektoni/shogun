@@ -45,7 +45,7 @@
 
 using namespace shogun;
 
-ParameterObserverCVMulticlass::ParameterObserverCVMulticlass(
+CParameterObserverCVMulticlass::CParameterObserverCVMulticlass(
     bool compute_ROC, bool compute_PRC, bool compute_conf_matrices,
     bool verbose)
     : ParameterObserverCV(verbose), m_initialized(false),
@@ -57,7 +57,7 @@ ParameterObserverCVMulticlass::ParameterObserverCVMulticlass(
 {
 }
 
-ParameterObserverCVMulticlass::~ParameterObserverCVMulticlass()
+CParameterObserverCVMulticlass::~CParameterObserverCVMulticlass()
 {
 	if (m_compute_ROC && m_fold_ROC_graphs)
 	{
@@ -80,19 +80,19 @@ ParameterObserverCVMulticlass::~ParameterObserverCVMulticlass()
 	}
 }
 
-void ParameterObserverCVMulticlass::append_binary_evaluation(
+void CParameterObserverCVMulticlass::append_binary_evaluation(
     CBinaryClassEvaluation* evaluation)
 {
 	m_binary_evaluations->push_back(evaluation);
 }
 
 CBinaryClassEvaluation*
-ParameterObserverCVMulticlass::get_binary_evaluation(int32_t idx)
+CParameterObserverCVMulticlass::get_binary_evaluation(int32_t idx)
 {
 	return (CBinaryClassEvaluation*)m_binary_evaluations->get_element_safe(idx);
 }
 
-void ParameterObserverCVMulticlass::initialize(std::string name)
+void CParameterObserverCVMulticlass::initialize(std::string name)
 {
 	if (m_initialized)
 	{
@@ -163,7 +163,7 @@ void ParameterObserverCVMulticlass::initialize(std::string name)
 	}
 }
 
-void ParameterObserverCVMulticlass::compute(
+void CParameterObserverCVMulticlass::compute(
     CrossValidationStorage* storage, CrossValidationFoldStorage* fold)
 {
 	CROCEvaluation eval_ROC;
@@ -227,7 +227,7 @@ void ParameterObserverCVMulticlass::compute(
 	}
 }
 
-SGMatrix<float64_t> ParameterObserverCVMulticlass::get_fold_ROC(
+SGMatrix<float64_t> CParameterObserverCVMulticlass::get_fold_ROC(
     int32_t run, int32_t fold, int32_t c)
 {
 	if (!m_initialized)
@@ -244,7 +244,7 @@ SGMatrix<float64_t> ParameterObserverCVMulticlass::get_fold_ROC(
 	                         fold * m_num_classes + c];
 }
 
-SGMatrix<float64_t> ParameterObserverCVMulticlass::get_fold_PRC(
+SGMatrix<float64_t> CParameterObserverCVMulticlass::get_fold_PRC(
     int32_t run, int32_t fold, int32_t c)
 {
 	if (!m_initialized)
@@ -261,7 +261,7 @@ SGMatrix<float64_t> ParameterObserverCVMulticlass::get_fold_PRC(
 	                         fold * m_num_classes + c];
 }
 
-float64_t ParameterObserverCVMulticlass::get_fold_evaluation_result(
+float64_t CParameterObserverCVMulticlass::get_fold_evaluation_result(
     int32_t run, int32_t fold, int32_t c, int32_t e)
 {
 	if (!m_initialized)
@@ -282,7 +282,7 @@ float64_t ParameterObserverCVMulticlass::get_fold_evaluation_result(
 }
 
 float64_t
-ParameterObserverCVMulticlass::get_fold_accuracy(int32_t run, int32_t fold)
+CParameterObserverCVMulticlass::get_fold_accuracy(int32_t run, int32_t fold)
 {
 	if (!m_initialized)
 		initialize("get_fold_accuracy");
@@ -295,7 +295,7 @@ ParameterObserverCVMulticlass::get_fold_accuracy(int32_t run, int32_t fold)
 }
 
 SGMatrix<int32_t>
-ParameterObserverCVMulticlass::get_fold_conf_matrix(int32_t run, int32_t fold)
+CParameterObserverCVMulticlass::get_fold_conf_matrix(int32_t run, int32_t fold)
 {
 	if (!m_initialized)
 		initialize("get_fold_conf_matrix");

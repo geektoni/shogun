@@ -1,0 +1,38 @@
+CSVFile f_feats("../../data/classifier_4class_2d_linear_features_train.dat")
+CSVFile f_labels("../../data/classifier_4class_2d_linear_labels_test.dat")
+
+#![create feature]
+RealFeatures features(f_feats)
+CombinedFeatures comb_features()
+comb_features.append_feature_obj(features)
+comb_features.append_feature_obj(features)
+comb_features.append_feature_obj(features)
+MulticlassLabels labels(f_labels)
+#![create feature]
+
+CombinedKernel kernel()
+kernel.append_kernel(GaussianKernel(10, 0.1))
+kernel.append_kernel(GaussianKernel(10, 1))
+kernel.append_kernel(GaussianKernel(10, 2))
+
+MKLMulticlass svm(1.0,kernel,labels)
+svm.set_kernel(kernel)
+
+StratifiedCrossValidationSplitting splitting_strategy(labels, 3)
+
+MulticlassAccuracy evaluation_criterium()
+
+CrossValidation cross_validation (svm, comb_features, labels, splitting_strategy, evaluation_criterium)
+cross_validation.set_autolock(False)
+
+ParameterObserverCVMulticlass multiclass_storage()
+multiclass_storage.append_binary_evaluation(F1Measure())
+cross_validation.subscribe_to_parameters(multiclass_storage)
+cross_validation.set_num_runs(3)
+
+real result=cross_validation.evaluate()
+
+real roc_0_0_0 = multiclass_storage.get_fold_ROC(0,0,0)
+print roc_0_0_0
+real auc_0_0_0 = multiclass_storage.get_fold_evaluation_result(0,0,0,0)
+print auc_0_0_0

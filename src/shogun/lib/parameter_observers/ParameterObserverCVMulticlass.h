@@ -51,7 +51,7 @@ namespace shogun
 	 * Observer which store values and generate stats about
 	 * a multiclass cross validation.
 	 */
-	class ParameterObserverCVMulticlass : public ParameterObserverCV
+	class CParameterObserverCVMulticlass : public ParameterObserverCV
 	{
 
 	public:
@@ -62,14 +62,14 @@ namespace shogun
 		 * @param compute_conf_matrices whether we want to compute confidence
 		 * matrices
 		 */
-		ParameterObserverCVMulticlass(
+		CParameterObserverCVMulticlass(
 		    bool compute_ROC = true, bool compute_PRC = false,
 		    bool compute_conf_matrices = false, bool verbose = false);
 
 		/**
 		 * Destructor
 		 */
-		virtual ~ParameterObserverCVMulticlass();
+		virtual ~CParameterObserverCVMulticlass();
 
 		/** Appends a binary evaluation instance
 		*
