@@ -270,7 +270,7 @@ bool CWeightedDegreePositionStringKernel::init_optimization(
 	if (tree_num<0)
 		SG_DEBUG("initializing CWeightedDegreePositionStringKernel optimization\n")
 
-	for (auto i : progress(range(p_count), *this->io))
+	for (auto i : progress(range(p_count), this->io))
 	{
 		if (tree_num<0)
 		{
@@ -1253,7 +1253,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	if (num_threads < 2)
 	{
 
-	   auto pb = progress(range(num_feat), *this->io);
+	   auto pb = progress(range(num_feat), this->io);
 	   // TODO: replace with the new signal
 	   // for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 	   for (int32_t j = 0; j < num_feat; j++)
@@ -1283,7 +1283,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 	else
 	{
 
-		auto pb = progress(range(num_feat), *this->io);
+		auto pb = progress(range(num_feat), this->io);
 		// TODO: replace with the new signal
 		// for (int32_t j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		for (int32_t j = 0; j < num_feat; j++)
@@ -1426,7 +1426,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_scoring(
 	info.R_k = NULL;
 
 	// === main loop
-	auto pb = progress(range(num_feat * max_degree), *this->io);
+	auto pb = progress(range(num_feat * max_degree), this->io);
 	for( k = 0; k < max_degree; ++k )
 	{
 		const int32_t nofKmers = nofsKmers[ k ];
@@ -1526,7 +1526,7 @@ char* CWeightedDegreePositionStringKernel::compute_consensus(
 		table[i]=new DynArray<ConsensusEntry>(num_suppvec/10);
 
 	//compute consensus via dynamic programming
-	for (auto i : progress(range(num_tables), *this->io))
+	for (auto i : progress(range(num_tables), this->io))
 	{
 		bool cumulative=false;
 

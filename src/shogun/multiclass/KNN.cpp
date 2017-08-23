@@ -126,7 +126,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	distance->precompute_lhs();
 	distance->precompute_rhs();
 
-	auto pb = progress(range(n), *this->io);
+	auto pb = progress(range(n), this->io);
 
 	//for each test example
 	for (int32_t i = 0; i < n && (!cancel_computation()); i++)
@@ -209,7 +209,7 @@ CMulticlassLabels* CKNN::classify_NN()
 
 	distance->precompute_lhs();
 
-	auto pb = progress(range(num_lab), *this->io);
+	auto pb = progress(range(num_lab), this->io);
 
 	// for each test example
 	for (int32_t i = 0; i < num_lab && (!cancel_computation()); i++)

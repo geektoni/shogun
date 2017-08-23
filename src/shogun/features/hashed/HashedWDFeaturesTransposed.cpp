@@ -228,7 +228,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	if (num_threads < 2)
 	{
 		HASHEDWD_THREAD_PARAM params;
-		auto pb = progress(range(start, stop), *this->io);
+		auto pb = progress(range(start, stop), this->io);
 		params.hf=this;
 		params.sub_index=NULL;
 		params.output=output;
@@ -248,7 +248,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 		HASHEDWD_THREAD_PARAM* params = SG_MALLOC(HASHEDWD_THREAD_PARAM, num_threads);
-		auto pb = progress(range(start, stop), *this->io);
+		auto pb = progress(range(start, stop), this->io);
 		int32_t step= num_vectors/num_threads;
 
 		int32_t t;
@@ -314,7 +314,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 	if (num_threads < 2)
 	{
 		HASHEDWD_THREAD_PARAM params;
-		auto pb = progress(range(num), *this->io);
+		auto pb = progress(range(num), this->io);
 		params.hf=this;
 		params.sub_index=sub_index;
 		params.output=output;
@@ -335,7 +335,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 		HASHEDWD_THREAD_PARAM* params = SG_MALLOC(HASHEDWD_THREAD_PARAM, num_threads);
 		int32_t step= num/num_threads;
-		auto pb = progress(range(num), *this->io);
+		auto pb = progress(range(num), this->io);
 		int32_t t;
 
 		for (t=0; t<num_threads-1; t++)

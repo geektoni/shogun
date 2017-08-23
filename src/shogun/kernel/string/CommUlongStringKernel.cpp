@@ -233,7 +233,7 @@ bool CCommUlongStringKernel::init_optimization(
 
 	SG_DEBUG("initializing CCommUlongStringKernel optimization\n")
 
-	for (auto i : progress(range(0, count), *this->io))
+	for (auto i : progress(range(0, count), this->io))
 	{
 		add_to_normal(IDX[i], weights[i]);
 	}

@@ -490,7 +490,7 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 
 		SG_DEBUG("block_size=%ld file_size=%ld\n", blocksize, fsize)
 
-		auto pb = progress(range(fsize), *this->io, "COUNTING: ");
+		auto pb = progress(range(fsize), this->io, "COUNTING: ");
 		size_t sz=blocksize;
 		while (sz == blocksize)
 		{
@@ -517,7 +517,7 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 		features=SG_MALLOC(SGString<ST>, num_vectors);
 
 		auto pb2 =
-			PRange<int>(range(num_vectors), *this->io, "LOADING: ", UTF8, []() {
+			PRange<int>(range(num_vectors), this->io, "LOADING: ", UTF8, []() {
 				return true;
 			});
 		rewind(f);

@@ -81,7 +81,7 @@ namespace shogun
 		 * @param mode char mode (UTF8, ASCII etc.).
 		 */
 		ProgressPrinter(
-		    const SGIO& io, float64_t max_value, float64_t min_value,
+		    SGIO* io, float64_t max_value, float64_t min_value,
 		    const std::string& prefix, const SG_PRG_MODE mode)
 		    : m_io(io), m_max_value(max_value), m_min_value(min_value),
 		      m_prefix(prefix), m_mode(mode), m_last_progress(0),
@@ -89,14 +89,16 @@ namespace shogun
 		      m_progress_start_time(CTime::get_curtime()),
 		      m_current_value(min_value)
 		{
-			m_can_print = io.can_print_progress();
+			SG_REF(io)
+			m_can_print = m_io->can_print_progress();
 			if (m_can_print)
-				m_io.set_print_progress(false);
+				m_io->set_print_progress(false);
 		}
 		~ProgressPrinter()
 		{
 			if (m_can_print)
-				m_io.set_print_progress(true);
+				m_io->set_print_progress(true);
+			SG_UNREF(m_io)
 		}
 
 		/**
@@ -172,7 +174,7 @@ namespace shogun
 		{
 
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress() && !m_can_print)
+			if (!m_io->get_show_progress() && !m_can_print)
 				return;
 
 			if (m_max_value <= m_min_value)
@@ -228,28 +230,28 @@ namespace shogun
 			}
 
 			/** Print the actual progress bar to screen **/
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
+			m_io->message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
 			for (index_t i = 1; i < progress_bar_space; i++)
 			{
 				if (m_current_value.load() - m_min_value > i * size_chunk)
 				{
-					m_io.message(
+					m_io->message(
 					    MSG_MESSAGEONLY, "", "", -1, "%s",
 					    get_pb_char().c_str());
 				}
 				else
 				{
-					m_io.message(MSG_MESSAGEONLY, "", "", -1, " ");
+					m_io->message(MSG_MESSAGEONLY, "", "", -1, " ");
 				}
 			}
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", v);
+			m_io->message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", v);
 
 			if (estimate > 120)
 			{
 				snprintf(
 				    str, sizeof(str),
 				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
-				m_io.message(
+				m_io->message(
 				    MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
 				    total_estimate / 60);
 			}
@@ -258,7 +260,7 @@ namespace shogun
 				snprintf(
 				    str, sizeof(str),
 				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
-				m_io.message(
+				m_io->message(
 				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
 			}
 		}
@@ -271,7 +273,7 @@ namespace shogun
 		    float64_t max_value) const
 		{
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress() && !m_can_print)
+			if (!m_io->get_show_progress() && !m_can_print)
 				return;
 
 			m_current_value.store(current_val);
@@ -328,28 +330,28 @@ namespace shogun
 			}
 
 			/** Print the actual progress bar to screen **/
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
+			m_io->message(MSG_MESSAGEONLY, "", "", -1, "%s |", m_prefix.c_str());
 			for (index_t i = 1; i < progress_bar_space; i++)
 			{
 				if (m_current_value.load() - min_value > i * size_chunk)
 				{
-					m_io.message(
+					m_io->message(
 					    MSG_MESSAGEONLY, "", "", -1, "%s",
 					    get_pb_char().c_str());
 				}
 				else
 				{
-					m_io.message(MSG_MESSAGEONLY, "", "", -1, " ");
+					m_io->message(MSG_MESSAGEONLY, "", "", -1, " ");
 				}
 			}
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", current_val);
+			m_io->message(MSG_MESSAGEONLY, "", "", -1, "| %.2f\%", current_val);
 
 			if (estimate > 120)
 			{
 				snprintf(
 				    str, sizeof(str),
 				    "   %%1.1f minutes remaining  %%1.1f minutes total\r");
-				m_io.message(
+				m_io->message(
 				    MSG_MESSAGEONLY, "", "", -1, str, estimate / 60,
 				    total_estimate / 60);
 			}
@@ -358,7 +360,7 @@ namespace shogun
 				snprintf(
 				    str, sizeof(str),
 				    "   %%1.1f seconds remaining  %%1.1f seconds total\r");
-				m_io.message(
+				m_io->message(
 				    MSG_MESSAGEONLY, "", "", -1, str, estimate, total_estimate);
 			}
 		}
@@ -367,10 +369,10 @@ namespace shogun
 		void print_end() const
 		{
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress() && !m_can_print)
+			if (!m_io->get_show_progress() && !m_can_print)
 				return;
 
-			m_io.message(MSG_MESSAGEONLY, "", "", -1, "\n");
+			m_io->message(MSG_MESSAGEONLY, "", "", -1, "\n");
 		}
 
 		/**
@@ -415,7 +417,7 @@ namespace shogun
 		}
 
 		/** IO object */
-		SGIO m_io;
+		SGIO * m_io;
 		/** Maxmimum value */
 		float64_t m_max_value;
 		/** Minimum value */
@@ -469,7 +471,7 @@ namespace shogun
 		 * @param condition premature stop condition for the loop
 		 */
 		PRange(
-		    Range<T> range, const SGIO& io, const std::string prefix,
+		    Range<T> range, SGIO* io, const std::string prefix,
 		    const SG_PRG_MODE mode, std::function<bool()> condition)
 		    : m_range(range), m_condition(condition)
 		{
@@ -717,7 +719,7 @@ namespace shogun
 	 */
 	template <typename T>
 	inline PRange<T> progress(
-	    Range<T> range, const SGIO& io, std::string prefix = "PROGRESS: ",
+	    Range<T> range, SGIO * io, std::string prefix = "PROGRESS: ",
 	    SG_PRG_MODE mode = UTF8,
 	    std::function<bool()> condition = []() { return true; })
 	{
@@ -742,7 +744,7 @@ namespace shogun
 	    SG_PRG_MODE mode = UTF8,
 	    std::function<bool()> condition = []() { return true; })
 	{
-		return PRange<T>(range, *sg_io, prefix, mode, condition);
+		return PRange<T>(range, sg_io, prefix, mode, condition);
 	}
 };
 #endif /* __SG_PROGRESS_H__ */

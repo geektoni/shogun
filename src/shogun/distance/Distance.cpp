@@ -243,7 +243,7 @@ void CDistance::do_precompute_matrix()
 	SG_FREE(precomputed_matrix);
 	precomputed_matrix=SG_MALLOC(float32_t, num*(num+1)/2);
 
-	for (auto i : progress(range(num), *this->io))
+	for (auto i : progress(range(num), this->io, "PRECOMPUTE_MATRIX: "))
 	{
 		for (int32_t j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
@@ -286,7 +286,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	result=SG_MALLOC(T, total_num);
 
 	PRange<int64_t> pb = PRange<int64_t>(
-	    range(total_num), *this->io, "PROGRESS: ", UTF8, []() { return true; });
+	    range(total_num), this->io, "PROGRESS: ", UTF8, []() { return true; });
 	int32_t num_threads;
 	int64_t step;
 	#pragma omp parallel shared(num_threads, step)

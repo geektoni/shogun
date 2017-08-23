@@ -94,7 +94,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	m_statistics->resize(m_maxiter);
 
 	// Progress bar
-	auto pb = progress(range(m_maxiter), *this->io);
+	auto pb = progress(range(m_maxiter), this->io, "LMNN Train: ");
 
 	// Main loop
 	while (!stop)
