@@ -89,9 +89,14 @@ namespace shogun
 		      m_progress_start_time(CTime::get_curtime()),
 		      m_current_value(min_value)
 		{
+			m_can_print = io.can_print_progress();
+			if (m_can_print)
+				m_io.set_print_progress(false);
 		}
 		~ProgressPrinter()
 		{
+			if (m_can_print)
+				m_io.set_print_progress(true);
 		}
 
 		/**
@@ -167,7 +172,7 @@ namespace shogun
 		{
 
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress())
+			if (!m_io.get_show_progress() && !m_can_print)
 				return;
 
 			if (m_max_value <= m_min_value)
@@ -266,7 +271,7 @@ namespace shogun
 		    float64_t max_value) const
 		{
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress())
+			if (!m_io.get_show_progress() && !m_can_print)
 				return;
 
 			m_current_value.store(current_val);
@@ -362,7 +367,7 @@ namespace shogun
 		void print_end() const
 		{
 			// Check if the progress was enabled
-			if (!m_io.get_show_progress())
+			if (!m_io.get_show_progress() && !m_can_print)
 				return;
 
 			m_io.message(MSG_MESSAGEONLY, "", "", -1, "\n");
@@ -435,6 +440,8 @@ namespace shogun
 		mutable float64_t m_progress_start_time;
 		/** Current value */
 		mutable std::atomic<int64_t> m_current_value;
+		/** Check if thi printer can print the progress bar */
+		bool m_can_print;
 		/** Lock for multithreaded operations **/
 		mutable CLock lock;
 	};

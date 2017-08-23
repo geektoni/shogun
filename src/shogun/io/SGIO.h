@@ -23,6 +23,8 @@
 
 #ifndef _WIN32
 #include <unistd.h>
+#include <atomic>
+
 #endif
 
 namespace shogun
@@ -501,6 +503,24 @@ class SGIO
 		 */
 		int32_t unref();
 
+		/**
+		 * Check if we can print the progress bar.
+		 * @return true if we can print the progress bar, false otherwise.
+		 */
+		inline bool can_print_progress() const
+		{
+			return print_progress_flag.load();
+		}
+
+		/**
+		 * Set the flag to print the progress bar.
+		 * @param progress flag value
+		 */
+		inline void set_print_progress(bool progress)
+		{
+			print_progress_flag.store(progress);
+		}
+
 		/** @return object name */
 		inline const char* get_name() { return "SGIO"; }
 
@@ -518,6 +538,9 @@ class SGIO
 		FILE* target;
 		/** if progress bar shall be shown */
 		bool show_progress;
+		/** this is to ensure that just one progress bar
+		 * at a time can print on screen */
+		std::atomic<bool> print_progress_flag;
 		/** if each print function should append filename and linenumber of
 		 * where the print occurs etc */
 		EMessageLocation location_info;

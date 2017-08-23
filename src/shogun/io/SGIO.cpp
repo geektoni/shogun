@@ -61,6 +61,7 @@ SGIO::SGIO()
 
 SGIO::SGIO(const SGIO& orig)
     : target(orig.get_target()), show_progress(orig.get_show_progress()),
+	  print_progress_flag(true),
       location_info(orig.get_location_info()),
       syntax_highlight(orig.get_syntax_highlight()),
       loglevel(orig.get_loglevel())

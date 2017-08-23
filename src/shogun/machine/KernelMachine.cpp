@@ -297,11 +297,6 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	{
 		SG_DEBUG("computing output on %d test examples\n", num_vectors)
 
-		if (io->get_show_progress())
-			io->enable_progress();
-		else
-			io->disable_progress();
-
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
 		{
