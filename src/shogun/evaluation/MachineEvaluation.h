@@ -148,26 +148,49 @@ namespace shogun
 
 		/** The action which will be done when the user decides to
 		* premature stop the CMachineEvaluation execution */
-		virtual void on_next()
+		void on_next()
 		{
 			m_cancel_computation.store(true);
+			on_next_impl();
 		}
 
 		/** The action which will be done when the user decides to
 		* pause the CMachineEvaluation execution */
-		virtual void on_pause()
+		void on_pause()
 		{
 			m_pause_computation_flag.store(true);
-			/* Here there should be the actual code*/
+			on_pause_impl();
 			resume_evaluation();
 		}
 
 		/** The action which will be done when the user decides to
 		* return to prompt and terminate the program execution */
-		virtual void on_complete()
+		void on_complete()
 		{
+			on_complete_impl();
 		}
 
+		/**
+		 * The actual implementation of the action which will be done
+		 * when the user decide to stop the model's execution.
+		 */
+		virtual void on_next_impl()
+		{}
+
+		/**
+		 * The actual implementation of the action which will be done
+		 * when the user decide to pause the model's execution.
+		 */
+		virtual void on_pause_impl()
+		{}
+
+		/**
+		 * The actual implementation of the action which will be done
+		 * when the user decide to return to the command prompt.
+		 */
+		virtual void on_complete_impl()
+		{}
+		
 	protected:
 		/** Machine to be Evaluated */
 		CMachine* m_machine;
