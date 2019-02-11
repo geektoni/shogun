@@ -367,6 +367,15 @@ public:
 			}
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
+
+			// If the parameter can be observed, then emit its value
+			if (get_parameter(_tag).get_properties()
+					.has_property(ParameterProperties::OBSERVABLE))
+			{
+				auto tmp_obs = new ObservedValue(1, _tag.name().c_str(), make_any(value), SG_OBS_VALUE_TYPE::GENERAL)
+				observe(tmp_obs);
+			}
+
 		}
 		else
 		{
