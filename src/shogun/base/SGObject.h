@@ -871,7 +871,7 @@ protected:
 	 * @param description a user oriented description
 	 */
 	void register_observable_param(
-		const std::string& name, const SG_OBS_VALUE_TYPE type,
+		const std::string& name,
 		const std::string& description);
 
 private:
