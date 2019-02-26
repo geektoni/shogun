@@ -12,7 +12,8 @@ using namespace shogun;
 void CTStudentKernel::init()
 {
 	SG_ADD(&degree, "degree", "Kernel degree.", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
+	SG_ADD(
+	    (CSGObject**)&distance, "distance", "Distance to be used.",
 	    ParameterProperties::HYPER);
 }
 

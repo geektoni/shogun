@@ -871,8 +871,7 @@ protected:
 	 * @param description a user oriented description
 	 */
 	void register_observable_param(
-		const std::string& name,
-		const std::string& description);
+		const std::string& name, const std::string& description);
 
 private:
 	void push_back(CDynamicObjectArray* array, CSGObject* value);

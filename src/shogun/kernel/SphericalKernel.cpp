@@ -51,7 +51,8 @@ bool CSphericalKernel::init(CFeatures* l, CFeatures* r)
 
 void CSphericalKernel::register_params()
 {
-	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
+	SG_ADD(
+	    (CSGObject**)&distance, "distance", "Distance to be used.",
 	    ParameterProperties::HYPER);
 	SG_ADD(&sigma, "sigma", "Sigma kernel parameter.", ParameterProperties::HYPER);
 }

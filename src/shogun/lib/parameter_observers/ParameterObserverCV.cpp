@@ -70,8 +70,11 @@ void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 		m_observations.push_back(recalled_value);
 	}
 	else
-	{	SG_SPRINT("%s: Received an observed valye which is not "
-		"of type CrossValidationStorage\n", this->get_name());
+	{
+		SG_SPRINT(
+		    "%s: Received an observed valye which is not "
+		    "of type CrossValidationStorage\n",
+		    this->get_name());
 	}
 }
 
