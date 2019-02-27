@@ -370,10 +370,9 @@ public:
 
 			// If the parameter can be observed, then emit its value
 			if (get_parameter(_tag).get_properties()
-					.has_property(ParameterProperties::OBSERVABLE))
+					.has_property(ParameterProperties::MODEL))
 			{
-				auto tmp_obs = new ObservedValue(1, _tag.name().c_str(), make_any(value), SG_OBS_VALUE_TYPE::GENERAL)
-				observe(tmp_obs);
+				observe(ObservedValue::make_observation(1, _tag.name(), make_any(value)));
 			}
 
 		}
