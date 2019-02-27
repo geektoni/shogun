@@ -2,7 +2,7 @@
 * Written (W) 2019 Giovanni De Toni
 */
 
-#include "ParameterObserverLogger.h"
+#include <shogun/lib/parameter_observers/ParameterObserverLogger.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/type_case.h>
 
@@ -20,6 +20,6 @@ void ParameterObserverLogger::on_next(const TimedObservedValue &value) {
 	};
 
 	// Dispatch the value and print it
-	sg_any_dispatch(value.first.get_value(), sg_all_typemap, f_print);
+	sg_any_dispatch(value.first.get_value(), sg_all_typemap, f_print, f_print, f_print);
 
 }
