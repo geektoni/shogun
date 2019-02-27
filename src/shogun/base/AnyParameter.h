@@ -35,7 +35,8 @@ namespace shogun
 		NONE = 0,
 		HYPER = 1u << 0,
 		GRADIENT = 1u << 1,
-		MODEL = 1u << 2
+		MODEL = 1u << 2,
+		OBSERVABLE = 1u << 3
 	};
 
 	enableEnumClassBitmask(ParameterProperties);
