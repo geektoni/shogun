@@ -20,6 +20,10 @@ namespace shogun {
 		 */
 		virtual void on_next(const TimedObservedValue &value);
 
+		virtual void on_error(std::exception_ptr ptr);
+
+		virtual void on_complete();
+
 	};
 
 }

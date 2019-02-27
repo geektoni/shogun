@@ -23,3 +23,11 @@ void ParameterObserverLogger::on_next(const TimedObservedValue &value) {
 	sg_any_dispatch(value.first.get_value(), sg_all_typemap, f_print, f_print, f_print);
 
 }
+
+void ParameterObserverLogger::on_error(std::exception_ptr ptr) {
+
+}
+
+void ParameterObserverLogger::on_complete() {
+
+}
