@@ -62,11 +62,10 @@ namespace shogun
 		 * @param name param's name
 		 * @param value Any-wrapped value of the param
 		 */
-		ObservedValue(int64_t step, std::string& name, Any value)
+		ObservedValue(int64_t step, std::string name, Any value)
 		    : m_step(step), m_name(name), m_value(value)
 		{
 		}
-
 		~ObservedValue(){};
 
 		/**
