@@ -130,7 +130,7 @@ namespace shogun
 		* @return an ObservedValue object initialized
 		*/
 		static ObservedValue
-		make_observation(int64_t step, std::string& name, Any value)
+		make_observation(int64_t step, std::string name, Any value)
 		{
 			return ObservedValue(step, name, value);
 		}
