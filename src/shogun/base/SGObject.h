@@ -41,8 +41,8 @@ class SGIO;
 class Parallel;
 class Parameter;
 class CSerializableFile;
-class ParameterObserverInterface;
 class ObservedValue;
+class ParameterObserver;
 class CDynamicObjectArray;
 
 template <class T, class K> class CMap;
@@ -643,7 +643,7 @@ public:
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	void subscribe_to_parameters(ParameterObserverInterface* obs);
+	void subscribe_to_parameters(ParameterObserver* obs);
 
 	/** Print to stdout a list of observable parameters */
 	std::vector<std::string> list_observable_parameters();

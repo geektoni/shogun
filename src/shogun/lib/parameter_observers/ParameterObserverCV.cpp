@@ -44,17 +44,15 @@
 using namespace shogun;
 
 CParameterObserverCV::CParameterObserverCV(bool verbose)
-    : ParameterObserverInterface(), m_verbose(verbose)
+    : ParameterObserver(), m_verbose(verbose)
 {
 }
 
 CParameterObserverCV::~CParameterObserverCV()
 {
-	for (auto i : m_observations)
-		SG_UNREF(i)
 }
 
-void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
+void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 {
 	CrossValidationStorage* recalled_value = value.first->get<CrossValidationStorage*>("value");
 	SG_REF(recalled_value);
@@ -72,15 +70,6 @@ void CParameterObserverCV::on_error(std::exception_ptr ptr)
 
 void CParameterObserverCV::on_complete()
 {
-}
-
-void CParameterObserverCV::clear()
-{
-	for (auto i : m_observations)
-	{
-		SG_UNREF(i)
-	}
-	m_observations.clear();
 }
 
 void CParameterObserverCV::print_observed_value(
@@ -150,20 +139,4 @@ void CParameterObserverCV::print_machine_information(CMachine* machine) const
 		    "MKL sub-kernel weights =");
 		SG_UNREF(kernel);
 	}
-}
-
-CrossValidationStorage* CParameterObserverCV::get_observation(int run) const
-{
-	REQUIRE(
-	    run < get_num_observations(), "The run number must be less than %i",
-	    get_num_observations())
-
-	CrossValidationStorage* obs = m_observations[run];
-	SG_REF(obs)
-	return obs;
-}
-
-const int CParameterObserverCV::get_num_observations() const
-{
-	return m_observations.size();
 }
