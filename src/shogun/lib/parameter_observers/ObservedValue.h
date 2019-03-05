@@ -37,9 +37,11 @@
 #define SHOGUN_OBSERVEDVALUE_H
 
 #include <chrono>
+#include <utility>
+
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/common.h>
-#include <utility>
 
 /**
  * Definitions of basic object with are needed by the Parameter
@@ -53,7 +55,7 @@ namespace shogun
 	/**
 	 * Observed value which is emitted by algorithms.
 	 */
-	class ObservedValue
+	class ObservedValue : public CSGObject
 	{
 	public:
 		/**
@@ -65,6 +67,9 @@ namespace shogun
 		ObservedValue(int64_t step, std::string& name, Any value)
 		    : m_step(step), m_name(name), m_value(value)
 		{
+			SG_ADD(&m_step, "step", "Observation step", ParameterProperties::NONE);
+			SG_ADD(&m_name, "name", "Observed value name", ParameterProperties::NONE);
+			SG_ADD(&m_value, "value", "Observed value", ParameterProperties::NONE);
 		}
 
 		~ObservedValue(){};
@@ -91,7 +96,7 @@ namespace shogun
 		 * Get the param's name
 		 * @return param's name
 		 */
-		const std::string& get_name() const
+		const std::string& get_observed_name() const
 		{
 			return m_name;
 		}
@@ -100,7 +105,7 @@ namespace shogun
 		 * Set the param's name
 		 * @param name
 		 */
-		void set_name(const std::string& name)
+		void set_observed_name(const std::string& name)
 		{
 			m_name = name;
 		}
@@ -135,6 +140,9 @@ namespace shogun
 		{
 			return ObservedValue(step, name, value);
 		}
+
+		/** @return object name */
+		virtual const char* get_name() const { return "ObservedValue"; }
 
 	protected:
 		/** ObservedValue step (used by Tensorboard to print graphs) */
