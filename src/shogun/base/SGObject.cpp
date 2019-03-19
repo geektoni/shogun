@@ -45,6 +45,7 @@
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <shogun/lib/type_case.h>
 
 namespace shogun
 {
@@ -1127,6 +1128,19 @@ CSGObject* CSGObject::get(const std::string& name) const noexcept(false)
 		}
 	}
 	return result;
+}
+
+template <typename T>
+T CSGObject::get(const Tag<T>& _tag, int32_t index) const noexcept(false)
+{
+	const Any value = get_parameter(_tag).get_value();
+	sg_any_dispatch(value, sg_vector_typemap, None{}, [](auto v){
+		return static_cast<T>(v);
+	});
+	SG_ERROR(
+			"There is no vector '%s' in %s.\n", _tag.name().c_str(),
+			get_name());
+	return -1;
 }
 
 void CSGObject::push_back(CDynamicObjectArray* array, CSGObject* value)

@@ -574,6 +574,9 @@ public:
 		}
 		return string_enum_reverse_lookup(_tag.name(), get<machine_int_t>(_tag.name()));
 	}
+
+	template<typename T>
+	T get(const Tag<T>& _tag, int32_t index) const noexcept(false);
 #endif
 
 	/** Getter for a class parameter, identified by a name.
@@ -588,6 +591,13 @@ public:
 		Tag<T> tag(name);
 		return get(tag);
 	}
+
+	template <typename T, typename U = void>
+	T get(const std::string & name, int32_t index) const noexcept(false)
+	{
+		Tag<T> tag(name);
+		return get(tag, index);
+	};
 
 	/** Returns string representation of the object that contains
 	 * its name and parameters.

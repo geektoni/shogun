@@ -41,6 +41,7 @@ class SGObjectClone : public ::testing::Test
 
 SG_TYPED_TEST_CASE(SGObjectEquals, sg_all_primitive_types, complex128_t);
 SG_TYPED_TEST_CASE(SGObjectClone, sg_all_primitive_types, complex128_t);
+SG_TYPED_TEST_CASE(SGObjectGet, sg_all_primitive_types, complex128_t);
 
 TYPED_TEST(SGObjectEquals, mock_allocate_delete)
 {
@@ -566,4 +567,15 @@ TEST(SGObject, watch_method)
 	EXPECT_EQ(obj->get<int>("some_method"), obj->some_method());
 	EXPECT_THROW(obj->put<int>("some_method", 0), ShogunException);
 	EXPECT_NO_THROW(obj->to_string());
+}
+
+TEST(SGObjectGet, get_vector_element)
+{
+	auto obj = some<CMockObject>();
+	SGVector<int32_t> vector(1);
+	vector[0] = 42;
+	obj->put(Tag<SGVector<int32_t>>("vector"), vector);
+
+	EXPECT_NO_THROW(obj->get<int32_t>("vector", 0));
+	EXPECT_EQ(obj->get<int32_t>("vector", 0), 42);
 }
