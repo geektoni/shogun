@@ -26,6 +26,7 @@
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/parameter_observers/ObservedValue.h>
 #include <shogun/lib/tag.h>
+#include <shogun/lib/type_case.h>
 
 #include <map>
 #include <unordered_map>
@@ -576,7 +577,17 @@ public:
 	}
 
 	template<typename T>
-	T get(const Tag<T>& _tag, int32_t index) const noexcept(false);
+	T get(const Tag<T>& _tag, int32_t index) const noexcept(false)
+	{
+		const Any value = get_parameter(_tag).get_value();
+		sg_any_dispatch(value, sg_vector_typemap, None{}, [](auto v){
+			return static_cast<T>(v);
+		}, None{});
+		SG_ERROR(
+				"There is no vector '%s' in %s.\n", _tag.name().c_str(),
+				get_name());
+		return -1;
+	}
 #endif
 
 	/** Getter for a class parameter, identified by a name.
