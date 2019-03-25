@@ -386,10 +386,10 @@ public:
 	}
 
 	template <class T>
-	ObservedValueTemplated
+	ObservedValue*
 	make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
 	{
-		return new ObservedValueTemplated<T>(step, name, value, properties));
+		return new ObservedValueTemplated<T>(step, name, value, properties);
 	}
 
 	/** Setter for a class parameter that has values of type string,
@@ -984,11 +984,11 @@ protected:
 	 * @param name parameter's name
 	 */
 	template <class T>
-	Some<ObservedValue> make_tag_observation(int64_t step, std::string name)
+	ObservedValue* make_tag_observation(int64_t step, std::string name)
 	{
 		BaseTag t(name);
 		auto param = this->get_parameter(t);
-		return ObservedValue::make_observation<T>(
+		return new ObservedValueTemplated<T>(
 				step, name, any_cast<T>(param.get_value()), param.get_properties());
 	}
 
