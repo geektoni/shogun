@@ -45,6 +45,8 @@ class ParameterObserverInterface;
 class ObservedValue;
 class CDynamicObjectArray;
 
+template <class T> class ObservedValueTemplated;
+
 template <class T, class K> class CMap;
 
 struct TParameter;
@@ -373,7 +375,7 @@ public:
 			}
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
-			observe(ObservedValue::make_observation<T>(1, _tag.name(), get_parameter(_tag)));
+			observe(make_observation(1, _tag.name(), value, get_parameter(_tag).get_properties()));
 		}
 		else
 		{
@@ -381,6 +383,14 @@ public:
 				"Parameter %s::%s does not exist.\n", get_name(),
 				_tag.name().c_str());
 		}
+	}
+
+	template <class T>
+	Some<ObservedValue>
+	make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
+	{
+		return Some<ObservedValue>::from_raw(
+				new ObservedValueTemplated<T>(step, name, value, properties));
 	}
 
 	/** Setter for a class parameter that has values of type string,
