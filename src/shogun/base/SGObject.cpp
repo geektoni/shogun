@@ -22,6 +22,7 @@
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+#include <shogun/lib/parameter_observers/ObservedValueTemplated.h>
 
 #include <shogun/base/class_list.h>
 
@@ -784,7 +785,7 @@ void CSGObject::observe(const Some<ObservedValue> value)
 	m_subscriber_params->on_next(value);
 }
 
-void CSGObject::observe(const ObservedValue * value)
+void CSGObject::observe(ObservedValue * value)
 {
 	m_subscriber_params->on_next(wrap(value));
 }

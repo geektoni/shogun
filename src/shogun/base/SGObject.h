@@ -976,7 +976,7 @@ protected:
 	 */
 	void observe(const Some<ObservedValue> value);
 
-	void observe(const ObservedValue * value);
+	void observe(ObservedValue * value);
 
 	/**
 	 * Build an observation of a parameter registered in the object
