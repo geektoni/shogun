@@ -108,6 +108,13 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
  * End of macros for registering parameter properties
  ******************************************************************************/
 
+namespace observers {
+	template <class T>
+	ObservedValue* get_observation(
+			int64_t step, std::string name, AnyParameter param);
+}
+
+
 /** @brief Class SGObject is the base class of all shogun objects.
  *
  * Apart from dealing with reference counting that is used to manage shogung
@@ -373,6 +380,8 @@ public:
 			}
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
+
+			observe(observers::get_observation<T>(1, _tag.name(), this->get_parameter(_tag)));
 		}
 		else
 		{
@@ -967,18 +976,11 @@ protected:
 	void observe(const Some<ObservedValue> value);
 
 	/**
-	 * Build an observation of a parameter registered in the object
-	 * by providing its name.
-	 * @param name parameter's name
+	 * Observe a parameter value using a pointer and emit
+	 * it to observer.
+	 * @param value pointer to the observed parameter's value.
 	 */
-	template <class T>
-	Some<ObservedValue> make_tag_observation(int64_t step, std::string name)
-	{
-		BaseTag t(name);
-		auto param = this->get_parameter(t);
-		return ObservedValue::make_observation<T>(
-				step, name, any_cast<T>(param.get_value()), param.get_properties());
-	}
+	void observe(ObservedValue * value);
 
 	/**
 	 * Register which params this object can emit.
@@ -1036,5 +1038,7 @@ private:
 	/** Subscriber used to call onNext, onComplete etc.*/
 	SGSubscriber* m_subscriber_params;
 };
+
+
 }
 #endif // __SGOBJECT_H__

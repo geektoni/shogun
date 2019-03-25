@@ -784,6 +784,11 @@ void CSGObject::observe(const Some<ObservedValue> value)
 	m_subscriber_params->on_next(value);
 }
 
+void CSGObject::observe(ObservedValue * value)
+{
+	m_subscriber_params->on_next(wrap(value));
+}
+
 class CSGObject::ParameterObserverList
 {
 public:
@@ -1119,4 +1124,12 @@ std::string CSGObject::string_enum_reverse_lookup(
 		    return p.second == enum_value;
 	    });
 	return enum_map_it->first;
+}
+
+namespace observers {
+	template <class T>
+	SG_FORCED_INLINE ObservedValue* get_observation(int64_t step, std::string name, AnyParameter param)
+	{
+		return ObservedValue::make_observation<T>(step, name, param).get();
+	};
 }
