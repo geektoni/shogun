@@ -784,6 +784,11 @@ void CSGObject::observe(const Some<ObservedValue> value)
 	m_subscriber_params->on_next(value);
 }
 
+void CSGObject::observe(const ObservedValue * value)
+{
+	m_subscriber_params->on_next(wrap(value));
+}
+
 class CSGObject::ParameterObserverList
 {
 public:

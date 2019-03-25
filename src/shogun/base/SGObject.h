@@ -386,11 +386,10 @@ public:
 	}
 
 	template <class T>
-	Some<ObservedValue>
+	ObservedValueTemplated
 	make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
 	{
-		return Some<ObservedValue>::from_raw(
-				new ObservedValueTemplated<T>(step, name, value, properties));
+		return new ObservedValueTemplated<T>(step, name, value, properties));
 	}
 
 	/** Setter for a class parameter that has values of type string,
@@ -976,6 +975,8 @@ protected:
 	 * @param value Observed parameter's value
 	 */
 	void observe(const Some<ObservedValue> value);
+
+	void observe(const ObservedValue * value);
 
 	/**
 	 * Build an observation of a parameter registered in the object
