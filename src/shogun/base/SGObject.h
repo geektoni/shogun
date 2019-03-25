@@ -373,6 +373,7 @@ public:
 			}
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
+			observe(ObservedValue::make_observation<T>(1, _tag.name(), get_parameter(_tag)));
 		}
 		else
 		{
