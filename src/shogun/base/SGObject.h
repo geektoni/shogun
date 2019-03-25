@@ -55,6 +55,22 @@ template <class T> class SGStringList;
 
 using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
 
+namespace observable_utils {
+
+	class ObservedValue;
+
+	template<class T>
+	class ObservedValueTemplated;
+
+	/**
+ 	* Build an observation of a parameter registered in the object
+ 	* by providing its name.
+ 	* @param name parameter's name
+ 	*/
+	template<class T>
+	ObservedValue *make_tag_observation(const CSGObject *obj, int64_t step, std::string name);
+}
+
 /*******************************************************************************
  * define reference counter macros
  ******************************************************************************/
@@ -375,7 +391,7 @@ public:
 			}
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
-			observe(make_observation(1, _tag.name(), value, get_parameter(_tag).get_properties()));
+			observe(observable_utils::make_tag_observation<T>(this, 1, _tag.name()));
 		}
 		else
 		{
@@ -383,13 +399,6 @@ public:
 				"Parameter %s::%s does not exist.\n", get_name(),
 				_tag.name().c_str());
 		}
-	}
-
-	template <class T>
-	ObservedValue*
-	make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
-	{
-		return new ObservedValueTemplated<T>(step, name, value, properties);
 	}
 
 	/** Setter for a class parameter that has values of type string,
@@ -979,20 +988,6 @@ protected:
 	void observe(ObservedValue * value);
 
 	/**
-	 * Build an observation of a parameter registered in the object
-	 * by providing its name.
-	 * @param name parameter's name
-	 */
-	template <class T>
-	ObservedValue* make_tag_observation(int64_t step, std::string name)
-	{
-		BaseTag t(name);
-		auto param = this->get_parameter(t);
-		return new ObservedValueTemplated<T>(
-				step, name, any_cast<T>(param.get_value()), param.get_properties());
-	}
-
-	/**
 	 * Register which params this object can emit.
 	 * @param name the param name
 	 * @param type the param type
@@ -1048,5 +1043,18 @@ private:
 	/** Subscriber used to call onNext, onComplete etc.*/
 	SGSubscriber* m_subscriber_params;
 };
+
+namespace observable_utils {
+
+	template <class T>
+	ObservedValue* make_tag_observation(const CSGObject * obj, int64_t step, std::string name)
+	{
+		BaseTag t(name);
+		auto param = obj->get_params().find(name)->second;
+		return new ObservedValueTemplated<T>(
+				step, name, any_cast<T>(param->get_value()), param->get_properties());
+	}
+}
+
 }
 #endif // __SGOBJECT_H__
