@@ -10,7 +10,7 @@ using namespace shogun;
 
 TEST(ObservedValue, set_correct)
 {
-	auto obs = ObservedValue::make_observation(1, "test", "test description", 42);
+	auto obs = make_observation(1, "test", "test description", 42);
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
 	EXPECT_EQ(obs->get<int32_t>("value"), 42);
@@ -20,7 +20,7 @@ TEST(ObservedValue, set_correct_properties)
 {
 	AnyParameterProperties any_prop("test description",
 										   ParameterProperties::MODEL);
-	auto obs = ObservedValue::make_observation(1, "test", 42, any_prop);
+	auto obs = make_observation(1, "test", 42, any_prop);
 
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
@@ -34,7 +34,7 @@ TEST(ObservedValue, set_correct_parameter)
 	AnyParameter param(make_any(p),
 					   AnyParameterProperties("test description", ParameterProperties::MODEL));
 
-	auto obs = ObservedValue::make_observation<int32_t>(1, "test", param);
+	auto obs = make_observation<int32_t>(1, "test", param);
 	EXPECT_EQ(obs->get<int64_t>("step"), 1);
 	EXPECT_EQ(obs->get<std::string>("name"), "test");
 	EXPECT_EQ(obs->get<int32_t>("value"), 42);

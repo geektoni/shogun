@@ -110,7 +110,7 @@ CEvaluationResult* CCrossValidation::evaluate_impl()
 
 		/* Emit the value*/
 		observe(
-		    ObservedValue::make_observation<CrossValidationStorage*>(
+		    make_observation<CrossValidationStorage*>(
 		        i, "cross_validation_run", "One run of CrossValidation", storage));
 
 		SG_UNREF(storage)

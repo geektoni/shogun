@@ -13,6 +13,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/base/some.h>
+#include <shogun/base/Parameter.h>
 
 /**
  * Definitions of basic object with are needed by the Parameter
@@ -50,51 +51,6 @@ namespace shogun
 		~ObservedValue(){};
 
 #ifndef SWIG
-		/**
-		* Helper method to generate an ObservedValue.
-		* @param step the step
-		* @param name the param's name we are observing
-		* @param description the param's description
-		* @param value the param's value
-		* @return an ObservedValue object initialized
-		*/
-		template <class T>
-		static Some<ObservedValue>
-		make_observation(int64_t step, std::string name, std::string description, T value)
-		{
-			return Some<ObservedValue>::from_raw(
-			    new ObservedValueTemplated<T>(step, name, description, value));
-		}
-
-		/**
-		* Helper method to generate an ObservedValue with custom properties.
-		* @param step the step
-		* @param name the param's name we are observing
-		* @param description the param's description
-		* @param value the param's value
-		* @return an ObservedValue object initialized
-		*/
-		template <class T>
-		static Some<ObservedValue>
-		make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
-		{
-			return Some<ObservedValue>::from_raw(
-					new ObservedValueTemplated<T>(step, name, value, properties));
-		}
-
-		/**
-	 	* Build an observation of a parameter registered in the object
-	 	* by providing its name.
-	 	* @param name parameter's name
-	 	*/
-		template <class T>
-		static Some<ObservedValue>
-		make_observation(int64_t step, std::string name, AnyParameter param)
-		{
-			return ObservedValue::make_observation<T>(
-					step, name, any_cast<T>(param.get_value()), param.get_properties());
-		}
-
 		/**
 		* Return a any version of the stored type.
 		* @return the any value.
@@ -187,6 +143,54 @@ namespace shogun
 		           value.time_since_epoch())
 		    .count();
 	}
+
+#ifndef SWIG
+/**
+		* Helper method to generate an ObservedValue.
+		* @param step the step
+		* @param name the param's name we are observing
+		* @param description the param's description
+		* @param value the param's value
+		* @return an ObservedValue object initialized
+		*/
+	template <class T>
+	static Some<ObservedValue>
+	make_observation(int64_t step, std::string name, std::string description, T value)
+	{
+		return Some<ObservedValue>::from_raw(
+				new ObservedValueTemplated<T>(step, name, description, value));
+	}
+
+	/**
+	* Helper method to generate an ObservedValue with custom properties.
+	* @param step the step
+	* @param name the param's name we are observing
+	* @param description the param's description
+	* @param value the param's value
+	* @return an ObservedValue object initialized
+	*/
+	template <class T>
+	static Some<ObservedValue>
+	make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
+	{
+		return Some<ObservedValue>::from_raw(
+				new ObservedValueTemplated<T>(step, name, value, properties));
+	}
+
+	/**
+	 * Build an observation of a parameter registered in the object
+	 * by providing its name.
+	 * @param name parameter's name
+	 */
+	template <class T>
+	static Some<ObservedValue>
+	make_observation(int64_t step, std::string name, AnyParameter param)
+	{
+		return make_observation<T>(
+				step, name, any_cast<T>(param.get_value()), param.get_properties());
+	}
+
+#endif
 }
 
 #endif // SHOGUN_OBSERVEDVALUE_H
