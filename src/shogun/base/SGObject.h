@@ -108,12 +108,6 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
  * End of macros for registering parameter properties
  ******************************************************************************/
 
-namespace observers {
-	template <class T>
-	ObservedValue* get_observation(
-			int64_t step, std::string name, AnyParameter param);
-}
-
 
 /** @brief Class SGObject is the base class of all shogun objects.
  *
@@ -380,8 +374,6 @@ public:
 			}
 			ref_value(value);
 			update_parameter(_tag, make_any(value));
-
-			observe(observers::get_observation<T>(1, _tag.name(), this->get_parameter(_tag)));
 		}
 		else
 		{
