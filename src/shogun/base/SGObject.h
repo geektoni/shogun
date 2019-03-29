@@ -30,6 +30,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <shogun/lib/parameter_observers/ObservedValue.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -349,39 +350,7 @@ public:
 	 * @param value value of the parameter
 	 */
 	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
-	void put(const Tag<T>& _tag, const T& value) noexcept(false)
-	{
-		if (has_parameter(_tag))
-		{
-			auto parameter_value = get_parameter(_tag).get_value();
-			if (!parameter_value.cloneable())
-			{
-				SG_ERROR(
-					"Cannot put parameter %s::%s.\n", get_name(),
-					_tag.name().c_str());
-			}
-			try
-			{
-				any_cast<T>(parameter_value);
-			}
-			catch (const TypeMismatchException& exc)
-			{
-				SG_ERROR(
-					"Cannot put parameter %s::%s of type %s, incompatible "
-					"provided type %s.\n",
-					get_name(), _tag.name().c_str(), exc.actual().c_str(),
-					exc.expected().c_str());
-			}
-			ref_value(value);
-			update_parameter(_tag, make_any(value));
-		}
-		else
-		{
-			SG_ERROR(
-				"Parameter %s::%s does not exist.\n", get_name(),
-				_tag.name().c_str());
-		}
-	}
+	void put(const Tag<T>& _tag, const T& value) noexcept(false);
 
 	/** Setter for a class parameter that has values of type string,
 	 * identified by a Tag.
@@ -1031,6 +1000,42 @@ private:
 	SGSubscriber* m_subscriber_params;
 };
 
+
+	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
+	{
+		if (has_parameter(_tag))
+		{
+			auto parameter_value = get_parameter(_tag).get_value();
+			if (!parameter_value.cloneable())
+			{
+				SG_ERROR(
+						"Cannot put parameter %s::%s.\n", get_name(),
+						_tag.name().c_str());
+			}
+			try
+			{
+				any_cast<T>(parameter_value);
+			}
+			catch (const TypeMismatchException& exc)
+			{
+				SG_ERROR(
+						"Cannot put parameter %s::%s of type %s, incompatible "
+								"provided type %s.\n",
+						get_name(), _tag.name().c_str(), exc.actual().c_str(),
+						exc.expected().c_str());
+			}
+			ref_value(value);
+			update_parameter(_tag, make_any(value));
+			observe(ObservedValue::make_observation<T>(1, _tag.name(), get_parameter(_tag)));
+		}
+		else
+		{
+			SG_ERROR(
+					"Parameter %s::%s does not exist.\n", get_name(),
+					_tag.name().c_str());
+		}
+	}
 
 }
 #endif // __SGOBJECT_H__
