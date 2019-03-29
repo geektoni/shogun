@@ -1011,7 +1011,7 @@ private:
 		 * @param name name of the observed value
 		 */
 		ObservedValue(int64_t step, std::string name);
-		
+
 		/**
 		 * Destructor
 		 */
@@ -1086,6 +1086,57 @@ private:
 		std::string m_name;
 		/** Untyped value */
 		Any m_any_value;
+	};
+
+	/**
+	 * Templated specialisation of ObservedValue that stores the actual data.
+	 * @tparam T the type of the observed value
+	 */
+	template <class T>
+	class ObservedValueTemplated : public ObservedValue
+	{
+
+	public:
+		/**
+		 * Constructor
+		 * @param step step
+		 * @param name the observed value's name
+		 * @param value the observed value
+		 */
+		ObservedValueTemplated(int64_t step, std::string name, std::string description, T value)
+				: ObservedValue(step, name), m_observed_value(value)
+		{
+			this->watch_param(
+					"value", &m_observed_value,
+					AnyParameterProperties(
+							description, ParameterProperties::NONE));
+			m_any_value = make_any(m_observed_value);
+		}
+
+		/**
+		 * Constructor which takes AnyParameterProperties for the observed value
+		 * @param step step
+		 * @param name the observed value's name
+		 * @param value the observed value
+		 * @param properties properties of that observed value
+		 */
+		ObservedValueTemplated(int64_t step, std::string name, T value, AnyParameterProperties properties)
+				: ObservedValue(step, name), m_observed_value(value)
+		{
+			this->watch_param("value", &m_observed_value, properties);
+			m_any_value = make_any(m_observed_value);
+		}
+
+		/**
+		 * Destructor
+		 */
+		~ObservedValueTemplated(){};
+
+	private:
+		/**
+		 * Templated observed value
+		 */
+		T m_observed_value;
 	};
 
 
