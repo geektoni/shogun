@@ -999,6 +999,9 @@ private:
 	SGSubscriber* m_subscriber_params;
 };
 
+	template<class T>
+	class ObservedValueTemplated;
+
 	/**
 	 * Observed value which is emitted by algorithms.
 	 */
