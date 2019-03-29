@@ -999,6 +999,102 @@ private:
 	SGSubscriber* m_subscriber_params;
 };
 
+	/**
+	 * Observed value which is emitted by algorithms.
+	 */
+	class ObservedValue : public CSGObject
+	{
+	public:
+		/**
+		 * Constructor
+		 * @param step step
+		 * @param name name of the observed value
+		 */
+		ObservedValue(int64_t step, std::string name)
+				: CSGObject(), m_step(step), m_name(name), m_any_value(Any())
+		{
+			SG_ADD(&m_step, "step", "Step");
+			this->watch_param(
+					"name", &m_name,
+					AnyParameterProperties("Name of the observed value"));
+		}
+
+		/**
+		 * Destructor
+		 */
+		~ObservedValue(){};
+
+#ifndef SWIG
+		/**
+		* Helper method to generate an ObservedValue.
+		* @param step the step
+		* @param name the param's name we are observing
+		* @param description the param's description
+		* @param value the param's value
+		* @return an ObservedValue object initialized
+		*/
+		template <class T>
+		static Some<ObservedValue>
+		make_observation(int64_t step, std::string name, std::string description, T value)
+		{
+			return Some<ObservedValue>::from_raw(
+					new ObservedValueTemplated<T>(step, name, description, value));
+		}
+
+		/**
+		* Helper method to generate an ObservedValue with custom properties.
+		* @param step the step
+		* @param name the param's name we are observing
+		* @param description the param's description
+		* @param value the param's value
+		* @return an ObservedValue object initialized
+		*/
+		template <class T>
+		static Some<ObservedValue>
+		make_observation(int64_t step, std::string name, T value, AnyParameterProperties properties)
+		{
+			return Some<ObservedValue>::from_raw(
+					new ObservedValueTemplated<T>(step, name, value, properties));
+		}
+
+		/**
+		 * Build an observation of a parameter registered in the object
+		 * by providing its name.
+		 * @param name parameter's name
+		 */
+		template <class T>
+		static Some<ObservedValue>
+		make_observation(int64_t step, std::string name, AnyParameter param)
+		{
+			return make_observation<T>(
+					step, name, any_cast<T>(param.get_value()), param.get_properties());
+		}
+
+		/**
+		* Return a any version of the stored type.
+		* @return the any value.
+		*/
+		virtual Any& get_any()
+		{
+			return m_any_value;
+		}
+#endif
+
+		/** @return object name */
+		virtual const char* get_name() const
+		{
+			return "ObservedValue";
+		}
+
+	protected:
+		/** ObservedValue step (used by Tensorboard to print graphs) */
+		int64_t m_step;
+		/** Parameter's name */
+		std::string m_name;
+		/** Untyped value */
+		Any m_any_value;
+	};
+
 
 	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
 	void CSGObject::put(const Tag<T>& _tag, const T& value) noexcept(false)
