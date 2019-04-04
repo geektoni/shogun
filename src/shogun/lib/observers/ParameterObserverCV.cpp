@@ -36,7 +36,7 @@
 #include <shogun/classifier/mkl/MKL.h>
 #include <shogun/classifier/mkl/MKLMulticlass.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/lib/parameter_observers/ParameterObserverCV.h>
+#include <shogun/lib/observers/ParameterObserverCV.h>
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
@@ -58,7 +58,8 @@ CParameterObserverCV::~CParameterObserverCV()
 void CParameterObserverCV::on_next(const shogun::TimedObservedValue& value)
 {
 	CrossValidationStorage* recalled_value =
-	    value.first->get<CrossValidationStorage*>("value");
+	    value.first->get<CrossValidationStorage*>(
+	        value.first->get<std::string>("name"));
 	SG_REF(recalled_value);
 
 	/* Print information on screen if enabled*/

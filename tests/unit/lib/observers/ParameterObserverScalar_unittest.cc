@@ -32,46 +32,37 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#include <gtest/gtest.h>
+
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#ifndef SHOGUN_PARAMETEROBSERVERSCALAR_H
-#define SHOGUN_PARAMETEROBSERVERSCALAR_H
+#include <shogun/lib/observers/ParameterObserverScalar.h>
+#include <vector>
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/parameter_observers/ParameterObserverTensorBoard.h>
+std::vector<std::string> test_params = {"a", "b", "c", "d"};
 
-namespace shogun
+using namespace shogun;
+
+TEST(ParameterObserverScalar, filter_empty)
 {
-	/**
-	 * Implementation of a ParameterObserver which write to file
-	 * scalar values, given object emitted from a parameter observable.
-	 */
-	class ParameterObserverScalar : public ParameterObserverTensorBoard,
-	                                public CSGObject
-	{
-
-	public:
-		ParameterObserverScalar();
-		ParameterObserverScalar(std::vector<std::string>& parameters);
-		ParameterObserverScalar(
-		    const std::string& filename, std::vector<std::string>& parameters);
-		~ParameterObserverScalar();
-
-		virtual void on_next(const TimedObservedValue& value);
-		virtual void on_error(std::exception_ptr);
-		virtual void on_complete();
-
-		/**
-		* Get class name.
-		* @return class name
-		*/
-		virtual const char* get_name() const
-		{
-			return "ParameterObserverScalar";
-		}
-	};
+	ParameterObserverScalar tmp;
+	EXPECT_TRUE(tmp.filter("a"));
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERSCALAR_H
+TEST(ParameterObserverScalar, filter_found)
+{
+	ParameterObserverScalar tmp{test_params};
+	EXPECT_TRUE(tmp.filter("a"));
+	EXPECT_TRUE(tmp.filter("b"));
+	EXPECT_TRUE(tmp.filter("c"));
+	EXPECT_TRUE(tmp.filter("d"));
+}
+
+TEST(ParameterObserverScalar, filter_not_found)
+{
+	ParameterObserverScalar tmp{test_params};
+	EXPECT_FALSE(tmp.filter("k"));
+}
+
 #endif // HAVE_TFLOGGER

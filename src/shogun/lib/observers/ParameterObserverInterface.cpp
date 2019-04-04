@@ -32,49 +32,39 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/config.h>
-#ifdef HAVE_TFLOGGER
-
-#include <shogun/io/TBOutputFormat.h>
-#include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
+#include <shogun/lib/RefCount.h>
+#include <shogun/lib/observers/ParameterObserverInterface.h>
 
 using namespace shogun;
 
-ParameterObserverScalar::ParameterObserverScalar()
-    : ParameterObserverTensorBoard()
+ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
 {
 }
 
-ParameterObserverScalar::ParameterObserverScalar(
+ParameterObserverInterface::ParameterObserverInterface(
     std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(parameters)
+    : m_parameters(parameters)
 {
 }
 
-ParameterObserverScalar::ParameterObserverScalar(
+ParameterObserverInterface::ParameterObserverInterface(
     const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(filename, parameters)
+    : m_parameters(parameters)
 {
 }
 
-ParameterObserverScalar::~ParameterObserverScalar()
+ParameterObserverInterface::~ParameterObserverInterface()
 {
 }
 
-void ParameterObserverScalar::on_next(const TimedObservedValue& value)
+bool ParameterObserverInterface::filter(const std::string& param)
 {
-	auto node_name = std::string("node");
-	auto format = TBOutputFormat();
-	auto event_value = format.convert_scalar(value, node_name);
-	m_writer.writeEvent(event_value);
-}
+	// If there are no specified parameters, then watch everything
+	if (m_parameters.size() == 0)
+		return true;
 
-void ParameterObserverScalar::on_error(std::exception_ptr)
-{
+	for (auto v : m_parameters)
+		if (v == param)
+			return true;
+	return false;
 }
-
-void ParameterObserverScalar::on_complete()
-{
-}
-
-#endif // HAVE_TFLOGGER

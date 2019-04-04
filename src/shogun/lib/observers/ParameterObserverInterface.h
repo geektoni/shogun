@@ -32,79 +32,83 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
+#ifndef SHOGUN_PARAMETEROBSERVERINTERFACE_H
+#define SHOGUN_PARAMETEROBSERVERINTERFACE_H
 
-#ifndef SHOGUN_PARAMETEROBSERVERCV_H
-#define SHOGUN_PARAMETEROBSERVERCV_H
+#include <stdexcept>
+#include <vector>
 
-#include <shogun/base/SGObject.h>
-#include <shogun/evaluation/CrossValidationStorage.h>
-#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+#include <shogun/lib/any.h>
+#include <shogun/lib/observers/observers_utils.h>
 
 namespace shogun
 {
 
 	/**
-	 * Base ParameterObserver class for CrossValidation.
+	 * Interface for the parameter observer classes
 	 */
-	class CParameterObserverCV : public ParameterObserverInterface,
-	                             public CSGObject
+	class ParameterObserverInterface
 	{
 
 	public:
-		CParameterObserverCV(bool verbose = false);
-		virtual ~CParameterObserverCV();
-
-		virtual void on_next(const TimedObservedValue& value);
-		virtual void on_error(std::exception_ptr ptr);
-		virtual void on_complete();
-
-		/* Erase all observations done so far */
-		virtual void clear();
-
 		/**
-		 * Get the total number of cross validation runs received
-		 * by this observer.
-		 * @return number of runs.
-		 */
-		const int32_t get_num_observations() const;
-
-		/**
-		 * Get a CrossValidationStorage object which will store
-		 * the result of a CrossValidation run.
-		 * @param run index of the run
-		 * @return a CrossValidationStorage object
-		 */
-		CrossValidationStorage* get_observation(int run) const;
-
-		/**
-		 * Print data contained into a CrossValidationStorage object.
-		 * @param value CrossValidationStorage object
-		 */
-		void print_observed_value(CrossValidationStorage* value) const;
-
-		/**
-		* Get class name.
-		* @return class name
+		* Default constructor
 		*/
-		virtual const char* get_name() const
-		{
-			return "ParameterObserverCV";
-		}
+		ParameterObserverInterface();
 
-	private:
-		void print_machine_information(CMachine* machine) const;
+		/**
+		 * Constructor
+		 * @param parameters list of parameters which we want to watch over
+		 */
+		ParameterObserverInterface(std::vector<std::string>& parameters);
+
+		/**
+		 * Constructor
+		 * @param filename name of the generated output file
+		 * @param parameters list of parameters which we want to watch over
+		 */
+		ParameterObserverInterface(
+		    const std::string& filename, std::vector<std::string>& parameters);
+		/**
+		 * Virtual destructor
+		 */
+		virtual ~ParameterObserverInterface();
+
+		/**
+		 * Filter function, check if the parameter name supplied is what
+		 * we want to monitor
+		 * @param param the param name
+		 * @return true if param is found inside of m_parameters list
+		 */
+		virtual bool filter(const std::string& param);
+
+		/**
+		 * Method which will be called when the parameter observable emits a
+		 * value.
+		 * @param value the value emitted by the parameter observable
+		 */
+		virtual void on_next(const TimedObservedValue& value) = 0;
+		/**
+		 * Method which will be called on errors
+		 */
+		virtual void on_error(std::exception_ptr) = 0;
+		/**
+		 * Method which will be called on completion
+		 */
+		virtual void on_complete() = 0;
+
+		/**
+		 * Method useful to empty the observer from
+		 * obseverd value it may have stored.
+		 */
+		virtual void clear(){};
 
 	protected:
 		/**
-		 * Observation's vector
+		 * List of parameter's names we want to monitor
 		 */
-		std::vector<CrossValidationStorage*> m_observations;
-
-		/**
-		 * enable printing of information
-		 */
-		bool m_verbose;
+		std::vector<std::string> m_parameters;
 	};
 }
 
-#endif // SHOGUN_PARAMETEROBSERVERCV_H
+#endif // SHOGUN_PARAMETEROBSERVER_H

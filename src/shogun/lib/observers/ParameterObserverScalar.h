@@ -32,39 +32,46 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <shogun/lib/RefCount.h>
-#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+#include <shogun/lib/config.h>
+#ifdef HAVE_TFLOGGER
 
-using namespace shogun;
+#ifndef SHOGUN_PARAMETEROBSERVERSCALAR_H
+#define SHOGUN_PARAMETEROBSERVERSCALAR_H
 
-ParameterObserverInterface::ParameterObserverInterface() : m_parameters()
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/observers/ParameterObserverTensorBoard.h>
+
+namespace shogun
 {
+	/**
+	 * Implementation of a ParameterObserver which write to file
+	 * scalar values, given object emitted from a parameter observable.
+	 */
+	class ParameterObserverScalar : public ParameterObserverTensorBoard,
+	                                public CSGObject
+	{
+
+	public:
+		ParameterObserverScalar();
+		ParameterObserverScalar(std::vector<std::string>& parameters);
+		ParameterObserverScalar(
+		    const std::string& filename, std::vector<std::string>& parameters);
+		~ParameterObserverScalar();
+
+		virtual void on_next(const TimedObservedValue& value);
+		virtual void on_error(std::exception_ptr);
+		virtual void on_complete();
+
+		/**
+		* Get class name.
+		* @return class name
+		*/
+		virtual const char* get_name() const
+		{
+			return "ParameterObserverScalar";
+		}
+	};
 }
 
-ParameterObserverInterface::ParameterObserverInterface(
-    std::vector<std::string>& parameters)
-    : m_parameters(parameters)
-{
-}
-
-ParameterObserverInterface::ParameterObserverInterface(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : m_parameters(parameters)
-{
-}
-
-ParameterObserverInterface::~ParameterObserverInterface()
-{
-}
-
-bool ParameterObserverInterface::filter(const std::string& param)
-{
-	// If there are no specified parameters, then watch everything
-	if (m_parameters.size() == 0)
-		return true;
-
-	for (auto v : m_parameters)
-		if (v == param)
-			return true;
-	return false;
-}
+#endif // SHOGUN_PARAMETEROBSERVERSCALAR_H
+#endif // HAVE_TFLOGGER

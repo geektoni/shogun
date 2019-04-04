@@ -21,7 +21,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/parameter_observers/ParameterObserverInterface.h>
+#include <shogun/lib/observers/ParameterObserverInterface.h>
 
 #include <shogun/base/class_list.h>
 
@@ -779,7 +779,7 @@ void CSGObject::subscribe_to_parameters(ParameterObserverInterface* obs)
 	                        .subscribe(sub);
 }
 
-void CSGObject::observe(const Some<ObservedValue> value)
+void CSGObject::observe(const Some<ObservedValue> value) const
 {
 	m_subscriber_params->on_next(value);
 }
@@ -1108,5 +1108,12 @@ std::string CSGObject::string_enum_reverse_lookup(
 		    return p.second == enum_value;
 	    });
 	return enum_map_it->first;
+}
 
+ObservedValue::ObservedValue(const int64_t step, const std::string& name)
+    : CSGObject(), m_step(step), m_name(name), m_any_value(Any())
+{
+	SG_ADD(&m_step, "step", "Step");
+	this->watch_param(
+	    "name", &m_name, AnyParameterProperties("Name of the observed value"));
 }

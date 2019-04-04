@@ -35,46 +35,43 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include <shogun/io/TBOutputFormat.h>
-#include <shogun/lib/parameter_observers/ParameterObserverHistogram.h>
+#ifndef SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
+#define SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
 
-using namespace shogun;
+#include <shogun/base/SGObject.h>
+#include <shogun/lib/observers/ParameterObserverTensorBoard.h>
 
-ParameterObserverHistogram::ParameterObserverHistogram()
-    : ParameterObserverTensorBoard()
+namespace shogun
 {
+	/**
+	 * Implementation of a ParameterObserver which write to file
+	 * histograms, given object emitted from a parameter observable.
+	 */
+	class ParameterObserverHistogram : public ParameterObserverTensorBoard,
+	                                   public CSGObject
+	{
+
+	public:
+		ParameterObserverHistogram();
+		ParameterObserverHistogram(std::vector<std::string>& parameters);
+		ParameterObserverHistogram(
+		    const std::string& filename, std::vector<std::string>& parameters);
+		~ParameterObserverHistogram();
+
+		virtual void on_next(const TimedObservedValue& value);
+		virtual void on_error(std::exception_ptr);
+		virtual void on_complete();
+
+		/**
+		* Get class name.
+		* @return class name
+		*/
+		virtual const char* get_name() const
+		{
+			return "ParameterObserverHistogram";
+		}
+	};
 }
 
-ParameterObserverHistogram::ParameterObserverHistogram(
-    std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(parameters)
-{
-}
-
-ParameterObserverHistogram::ParameterObserverHistogram(
-    const std::string& filename, std::vector<std::string>& parameters)
-    : ParameterObserverTensorBoard(filename, parameters)
-{
-}
-
-ParameterObserverHistogram::~ParameterObserverHistogram()
-{
-}
-
-void ParameterObserverHistogram::on_next(const TimedObservedValue& value)
-{
-	auto node_name = std::string("node");
-	auto format = TBOutputFormat();
-	auto event_value = format.convert_vector(value, node_name);
-	m_writer.writeEvent(event_value);
-}
-
-void ParameterObserverHistogram::on_error(std::exception_ptr)
-{
-}
-
-void ParameterObserverHistogram::on_complete()
-{
-}
-
+#endif // SHOGUN_PARAMETEROBSERVERHISTOGRAM_H
 #endif // HAVE_TFLOGGER

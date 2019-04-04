@@ -32,37 +32,49 @@
 * Written (W) 2017 Giovanni De Toni
 *
 */
-#include <gtest/gtest.h>
-
 #include <shogun/lib/config.h>
 #ifdef HAVE_TFLOGGER
 
-#include <shogun/lib/parameter_observers/ParameterObserverScalar.h>
-#include <vector>
-
-std::vector<std::string> test_params = {"a", "b", "c", "d"};
+#include <shogun/io/TBOutputFormat.h>
+#include <shogun/lib/observers/ParameterObserverHistogram.h>
 
 using namespace shogun;
 
-TEST(ParameterObserverScalar, filter_empty)
+ParameterObserverHistogram::ParameterObserverHistogram()
+    : ParameterObserverTensorBoard()
 {
-	ParameterObserverScalar tmp;
-	EXPECT_TRUE(tmp.filter("a"));
 }
 
-TEST(ParameterObserverScalar, filter_found)
+ParameterObserverHistogram::ParameterObserverHistogram(
+    std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(parameters)
 {
-	ParameterObserverScalar tmp{test_params};
-	EXPECT_TRUE(tmp.filter("a"));
-	EXPECT_TRUE(tmp.filter("b"));
-	EXPECT_TRUE(tmp.filter("c"));
-	EXPECT_TRUE(tmp.filter("d"));
 }
 
-TEST(ParameterObserverScalar, filter_not_found)
+ParameterObserverHistogram::ParameterObserverHistogram(
+    const std::string& filename, std::vector<std::string>& parameters)
+    : ParameterObserverTensorBoard(filename, parameters)
 {
-	ParameterObserverScalar tmp{test_params};
-	EXPECT_FALSE(tmp.filter("k"));
+}
+
+ParameterObserverHistogram::~ParameterObserverHistogram()
+{
+}
+
+void ParameterObserverHistogram::on_next(const TimedObservedValue& value)
+{
+	auto node_name = std::string("node");
+	auto format = TBOutputFormat();
+	auto event_value = format.convert_vector(value, node_name);
+	m_writer.writeEvent(event_value);
+}
+
+void ParameterObserverHistogram::on_error(std::exception_ptr)
+{
+}
+
+void ParameterObserverHistogram::on_complete()
+{
 }
 
 #endif // HAVE_TFLOGGER
