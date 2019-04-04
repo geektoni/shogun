@@ -541,7 +541,6 @@ void CSGObject::init()
 	m_subject_params = new SGSubject();
 	m_observable_params = new SGObservable(m_subject_params->get_observable());
 	m_subscriber_params = new SGSubscriber(m_subject_params->get_subscriber());
-	m_next_subscription_index = 0;
 	m_total_subscriptions = 0;
 
 	SG_ADD(&m_total_subscriptions, "total_subscriptions", "Total number of parameter observers subscribed to this object.");
@@ -768,7 +767,7 @@ bool CSGObject::has_parameter(const BaseTag& _tag) const
 	return self->has(_tag);
 }
 
-int64_t CSGObject::subscribe_to_parameters(ParameterObserver* obs)
+void CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 {
 	auto sub = rxcpp::make_subscriber<TimedObservedValue>(
 	    [obs](TimedObservedValue e) { obs->on_next(e); },
@@ -785,27 +784,28 @@ int64_t CSGObject::subscribe_to_parameters(ParameterObserver* obs)
 	                        .subscribe(sub);
 
 	// Insert the subscription in the list
-	m_subscriptions.insert(
-			std::make_pair<int64_t, rxcpp::subscription>(
-					std::move(m_next_subscription_index),
-					std::move(subscription)));
+	m_subscriptions.insert(subscription);
+
+	obs->put("subscription", &subscription);
 
 	m_total_subscriptions++;
-
-	return m_next_subscription_index++;
 }
 
-void CSGObject::unsubscribe(int64_t index) {
+void CSGObject::unsubscribe(ParameterObserver *obs) {
+
+	auto sub = obs->get<rxcpp::subscription*>("subscription_id");
 
 	// Check if we have such subscription
-	auto it = m_subscriptions.find(index);
+	auto it = m_subscriptions.find(*sub);
 	if (it == m_subscriptions.end())
-		SG_ERROR("The object %s does not have any registered parameter observer with index %i",
-		  this->get_name(), index);
+		SG_ERROR("The provided observer is not registered inside object %s.",
+		  this->get_name());
 
-	it->second.unsubscribe();
-	m_subscriptions.erase(index);
+	it->unsubscribe();
+	m_subscriptions.erase(*sub);
+
 	m_total_subscriptions--;
+	obs->put("subscription_id", new rxcpp::subscription());
 }
 
 void CSGObject::observe(const Some<ObservedValue> value) const

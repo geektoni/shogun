@@ -174,6 +174,12 @@ namespace shogun
 		}
 
 	protected:
+
+		/**
+		 * Initialize the object
+		 */
+		void init();
+
 		/**
 		 * Implementation of the on_next method which will be needed
 		 * in order to process the observed value
@@ -190,6 +196,11 @@ namespace shogun
 		 * Observations recorded each time we compute on_next()
 		 */
 		std::vector<Some<ObservedValue>> m_observations;
+
+		/**
+		 * Subscription id set when I subscribe to a machine
+		 */
+		rxcpp::subscription * m_subscription;
 
 	};
 }

@@ -30,6 +30,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <set>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -659,13 +660,13 @@ public:
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	int64_t subscribe_to_parameters(ParameterObserver* obs);
+	void subscribe_to_parameters(ParameterObserver* obs);
 
 	/**
 	 * Detach an observer from the current SGObject.
 	 * @param subscription_index the index obtained by calling the subscribe procedure
 	 */
-	void unsubscribe(int64_t index);
+	void unsubscribe(ParameterObserver* obs);
 
 	/** Print to stdout a list of observable parameters */
 	std::vector<std::string> observable_names();
@@ -1055,8 +1056,7 @@ private:
 	SGSubscriber* m_subscriber_params;
 
 	/** List of subscription for this SGObject */
-	std::map<int64_t, rxcpp::subscription> m_subscriptions;
-	int64_t m_next_subscription_index;
+	std::set<rxcpp::subscription> m_subscriptions;
 	int64_t m_total_subscriptions;
 };
 

@@ -21,6 +21,8 @@
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/regression/GaussianProcessRegression.h>
 
+#include <rxcpp/rx-subscription.hpp>
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
@@ -575,6 +577,7 @@ TEST(SGObject, subscribe_observer)
 	auto param_obs = some<ParameterObserverScalar>();
 	obj->subscribe_to_parameters(param_obs);
 
+	EXPECT_TRUE(param_obs->get<rxcpp::subscription*>("subscription")->is_subscribed());
 	EXPECT_EQ(obj->get<int64_t>("total_subscriptions"), 1);
 }
 
@@ -582,9 +585,10 @@ TEST(SGObject, unsubscribe_observer)
 {
 	auto obj = some<CMockObject>();
 	auto param_obs = some<ParameterObserverScalar>();
-	auto subscription_index = obj->subscribe_to_parameters(param_obs);
-	obj->unsubscribe(subscription_index);
+	obj->subscribe_to_parameters(param_obs);
+	obj->unsubscribe(param_obs);
 
+	EXPECT_FALSE(param_obs->get<rxcpp::subscription*>("subscription")->is_subscribed());
 	EXPECT_EQ(obj->get<int64_t>("total_subscriptions"), 0);
 }
 
@@ -592,7 +596,7 @@ TEST(SGObject, unsubscribe_observer_failure)
 {
 	auto obj = some<CMockObject>();
 	auto param_obs = some<ParameterObserverScalar>();
-	obj->subscribe_to_parameters(param_obs);
+	auto param_obs_not_in = some<ParameterObserverScalar>();
 
-	EXPECT_THROW(obj->unsubscribe(2), ShogunException);
+	EXPECT_THROW(obj->unsubscribe(param_obs_not_in), ShogunException);
 }

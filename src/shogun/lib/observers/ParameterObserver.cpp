@@ -37,19 +37,22 @@
 
 using namespace shogun;
 
-ParameterObserver::ParameterObserver() : m_parameters()
+ParameterObserver::ParameterObserver() : m_parameters(), m_subscription(new rxcpp::subscription())
 {
+	init();
 }
 
 ParameterObserver::ParameterObserver(std::vector<std::string>& parameters)
     : m_parameters(parameters)
 {
+	init();
 }
 
 ParameterObserver::ParameterObserver(
     const std::string& filename, std::vector<std::string>& parameters)
     : m_parameters(parameters)
 {
+	init();
 }
 
 ParameterObserver::~ParameterObserver()
@@ -66,4 +69,9 @@ bool ParameterObserver::filter(const std::string& param)
 		if (v == param)
 			return true;
 	return false;
+}
+
+void ParameterObserver::init()
+{
+	SG_ADD(m_subscription, "subscription", "Subscription to a machine");
 }
