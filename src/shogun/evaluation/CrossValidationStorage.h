@@ -192,7 +192,7 @@ namespace shogun
 		CLabels* m_expose_labels;
 
 		/** Vector with all the folds results */
-		std::vector<CrossValidationFoldStorage*> m_folds_results;
+		std::vector<CEvaluationResult*> m_folds_results;
 	};
 }
 
