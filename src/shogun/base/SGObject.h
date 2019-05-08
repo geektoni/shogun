@@ -25,6 +25,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
 #include <shogun/lib/tag.h>
+#include <shogun/util/clone_shogun.h>
 
 #include <map>
 #include <unordered_map>
@@ -1004,16 +1005,7 @@ protected:
 	 * @param step step
 	 * @param name tag's name
 	 */
-	template<class T,
-			typename std::enable_if_t<
-				!is_sg_vector<T>::value &&
-				!is_sg_matrix<T>::value>* = nullptr>
-	void observe(const int64_t step, const std::string& name) const;
-
-	template<class T,
-			typename std::enable_if_t<
-					is_sg_vector<T>::value ||
-					is_sg_matrix<T>::value>* = nullptr>
+	template<class T>
 	void observe(const int64_t step, const std::string& name) const;
 
 	/**
@@ -1315,27 +1307,13 @@ void CSGObject::observe(
 	this->observe(obs);
 }
 
-template<class T,
-		typename std::enable_if_t<
-				!is_sg_vector<T>::value &&
-				!is_sg_matrix<T>::value>*>
+template<class T>
 void CSGObject::observe(const int64_t step, const std::string& name) const
 {
 	auto param = this->get_parameter(BaseTag(name));
+	auto casted_param = any_cast<T>(param.get_value());
 	auto obs = some<ObservedValueTemplated<T>>(
-		step, name, any_cast<T>(param.get_value()), param.get_properties());
-	this->observe(obs);
-}
-
-template<class T,
-		typename std::enable_if_t<
-				is_sg_vector<T>::value ||
-				is_sg_matrix<T>::value>*>
-void CSGObject::observe(const int64_t step, const std::string& name) const
-{
-	auto param = this->get_parameter(BaseTag(name));
-	auto obs = some<ObservedValueTemplated<T>>(
-			step, name, any_cast<T>(param.get_value()).clone(), param.get_properties());
+			step, name, static_cast<T>(clone_utils::clone_shogun(casted_param)), param.get_properties());
 	this->observe(obs);
 }
 
