@@ -34,8 +34,8 @@ CLDA::CLDA(
     : CDenseRealDispatch<CLDA, CLinearMachine>(), m_gamma(gamma)
 {
 	init();
-	set_features(traindat);
-	set_labels(trainlab);
+	put("features", dynamic_cast<CFeatures*>(traindat));
+	put("labels", trainlab);
 	m_method = method;
 	m_gamma = gamma;
 	m_bdc_svd = bdc_svd;
@@ -66,7 +66,6 @@ bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 {
 	index_t num_feat = data->get_num_features();
 	index_t num_vec = data->get_num_vectors();
-	;
 
 	bool lda_more_efficient = (m_method == AUTO_LDA && num_vec <= num_feat);
 
@@ -103,9 +102,9 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 	// copy w_st into w
 	for (index_t i = 0; i < w.size(); ++i)
 		w[i] = sign * w_st[i];
-	set_w(w);
 
-	set_bias(-0.5 * sign * (m_neg + m_pos));
+	put("w",w);
+	put("bias",-0.5 * sign * (m_neg + m_pos));
 
 	return true;
 }
@@ -146,11 +145,10 @@ bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 	// copy w_st into w
 	for (index_t i = 0; i < w.size(); ++i)
 		w[i] = (float64_t)w_st[i];
-	set_w(w);
 
-	// get the bias.
-	set_bias(
-	    (float64_t)(
+	put("w", w);
+	put("bias",
+		static_cast<float64_t>(
 	        0.5 * (linalg::dot(w_neg, class_mean[0]) -
 	               linalg::dot(w_pos, class_mean[1]))));
 
