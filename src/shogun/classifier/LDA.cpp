@@ -103,8 +103,8 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 	for (index_t i = 0; i < w.size(); ++i)
 		w[i] = sign * w_st[i];
 
-	put("w",w);
-	put("bias",-0.5 * sign * (m_neg + m_pos));
+	put("w", w);
+	put("bias", -0.5 * sign * (m_neg + m_pos));
 
 	return true;
 }
@@ -147,10 +147,9 @@ bool CLDA::solver_classic(CDenseFeatures<ST>* data)
 		w[i] = (float64_t)w_st[i];
 
 	put("w", w);
-	put("bias",
-		static_cast<float64_t>(
-	        0.5 * (linalg::dot(w_neg, class_mean[0]) -
-	               linalg::dot(w_pos, class_mean[1]))));
+	put("bias", static_cast<float64_t>(
+	                0.5 * (linalg::dot(w_neg, class_mean[0]) -
+	                       linalg::dot(w_pos, class_mean[1]))));
 
 	return true;
 }
