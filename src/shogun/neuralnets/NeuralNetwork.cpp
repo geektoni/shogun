@@ -283,7 +283,7 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	if (m_gd_mini_batch_size==0) m_gd_mini_batch_size = training_set_size;
 	set_batch_size(m_gd_mini_batch_size);
 
-	int32_t n_param = get_num_parameters();
+	int32_t n_param = m_total_num_parameters;
 	SGVector<float64_t> gradients(n_param);
 
 	// needed for momentum
@@ -415,7 +415,7 @@ float64_t CNeuralNetwork::lbfgs_evaluate(void* userdata,
 {
 	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(userdata);
 
-	SGVector<float64_t> grad_vector(grad, network->get_num_parameters(), false);
+	SGVector<float64_t> grad_vector(grad, network->get<int32_t>("total_num_parameters"), false);
 
 	return network->compute_gradients(*network->m_lbfgs_temp_inputs,
 		*network->m_lbfgs_temp_targets, grad_vector);
@@ -433,7 +433,7 @@ int CNeuralNetwork::lbfgs_progress(void* instance,
 	SG_SINFO("Epoch %i: Error = %f\n",k, fx);
 
 	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(instance);
-	SGVector<float64_t> gradients((float64_t*)g, network->get_num_parameters(), false);
+	SGVector<float64_t> gradients((float64_t*)g, network->get<int32_t>("total_num_parameters"), false);
 	for (int32_t i=0; i<network->m_num_layers; i++)
 	{
 		SGVector<float64_t> layer_gradients = network->get_section(gradients, i);
@@ -636,7 +636,7 @@ SGMatrix<float64_t> CNeuralNetwork::features_to_matrix(CFeatures* features)
 	CDenseFeatures<float64_t>* inputs = (CDenseFeatures<float64_t>*) features;
 	REQUIRE(inputs->get_num_features()==m_num_inputs,
 		"Number of features (%i) must match the network's number of inputs "
-		"(%i)\n", inputs->get_num_features(), get_num_inputs());
+		"(%i)\n", inputs->get_num_features(),  m_num_inputs);
 
 	return inputs->get_feature_matrix();
 }
@@ -753,12 +753,6 @@ SGVector<T> CNeuralNetwork::get_section(SGVector<T> v, int32_t i)
 int32_t CNeuralNetwork::get_num_outputs()
 {
 	return get_layer(m_num_layers-1)->get_num_neurons();
-}
-
-CDynamicObjectArray* CNeuralNetwork::get_layers()
-{
-	SG_REF(m_layers);
-	return m_layers;
 }
 
 void CNeuralNetwork::init()

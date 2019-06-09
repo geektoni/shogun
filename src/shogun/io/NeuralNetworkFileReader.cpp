@@ -138,36 +138,36 @@ CNeuralNetwork* CNeuralNetworkFileReader::parse_network(json_object* json_networ
 		{
 			const char* method = json_object_get_string(iter.val);
 			if (string_equal(method, "NNOM_LBFGS"))
-				network->set_optimization_method(NNOM_LBFGS);
+				network->put<machine_int_t>("optimization_method", NNOM_LBFGS);
 			else if (string_equal(method, "NNOM_GRADIENT_DESCENT"))
-				network->set_optimization_method(NNOM_GRADIENT_DESCENT);
+				network->put<machine_int_t>("optimization_method", 	NNOM_GRADIENT_DESCENT);
 			else
 				SG_ERROR("Invalid optimization method (%s)\n", method);
 		}
 		else if (string_equal(iter.key, "l2_coefficient"))
-			network->set_l2_coefficient(json_object_get_double(iter.val));
+			network->put<float64_t>("l2_coefficient", json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "l1_coefficient"))
-			network->set_l1_coefficient(json_object_get_double(iter.val));
+			network->put<float64_t>("l1_coefficient", json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "dropout_hidden"))
-			network->set_dropout_hidden(json_object_get_double(iter.val));
+			network->put<float64_t>("dropout_hidden", json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "dropout_input"))
-			network->set_dropout_input(json_object_get_double(iter.val));
+			network->put<float64_t>("dropout_input", json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "max_norm"))
-			network->set_max_norm(json_object_get_double(iter.val));
+			network->put<float64_t>("max_norm", json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "epsilon"))
-			network->set_epsilon(json_object_get_double(iter.val));
+			network->put<float64_t>("epsilon", json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "max_num_epochs"))
-			network->set_max_num_epochs(json_object_get_int(iter.val));
+			network->put<int32_t>("max_num_epochs", json_object_get_int(iter.val));
 		else if (string_equal(iter.key, "gd_mini_batch_size"))
-			network->set_gd_mini_batch_size(json_object_get_int(iter.val));
+			network->put<int32_t>("gd_mini_batch_size",json_object_get_int(iter.val));
 		else if (string_equal(iter.key, "gd_learning_rate"))
-			network->set_gd_learning_rate(json_object_get_double(iter.val));
+			network->put<float64_t>("gd_learning_rate",json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "gd_learning_rate_decay"))
-			network->set_gd_learning_rate_decay(json_object_get_double(iter.val));
+			network->put<float64_t>("gd_learning_rate_decay",json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "gd_momentum"))
-			network->set_gd_momentum(json_object_get_double(iter.val));
+			network->put<float64_t>("gd_momentum",json_object_get_double(iter.val));
 		else if (string_equal(iter.key, "gd_error_damping_coeff"))
-			network->set_gd_error_damping_coeff(json_object_get_double(iter.val));
+			network->put<float64_t>("gd_error_damping_coeff",json_object_get_double(iter.val));
 
 		else if (!string_equal(iter.key, "layers"))
 			SG_ERROR("Invalid parameter (%s)\n", iter.key);
